@@ -20,7 +20,7 @@ const PlayingField = (props) => {
 
 	useEffect(() => {
 		setText();
-	}, [rSelected]);
+	}, [props.rSelected]);
 
 	return (
 		<>
