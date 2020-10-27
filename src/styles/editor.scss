@@ -1,0 +1,43 @@
+@import "../index.scss";
+
+.editor-cont {
+	@include flex;
+	flex-direction: column;
+	padding: 20px;
+	margin: 0 20px;
+	background-color: rgb(202, 191, 216);
+	max-width: 600px;
+	.head {
+		@include flex;
+		justify-content: space-between;
+		width: 100%;
+		padding: 10px 20px;
+	}
+	.button-cont {
+		button {
+			margin-right: 5px;
+		}
+	}
+	.stats-cont {
+		display: flex;
+	}
+	.main {
+		.text-area {
+			margin: 25px 0;
+			text-align: center;
+			span {
+				font-size: 1.2rem;
+			}
+		}
+		.input-area {
+			@include flex;
+			input {
+				flex: 1;
+				margin-right: 10px;
+			}
+			button {
+				min-width: 75px;
+			}
+		}
+	}
+}

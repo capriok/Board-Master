@@ -1,0 +1,59 @@
+@import "../index.scss";
+
+$bg: rgb(153, 164, 184);
+
+.room-main {
+	@include flex;
+	flex-direction: column;
+	background-color: $bg;
+	main {
+		@include flex;
+		width: 100%;
+		.editor {
+			flex: 1;
+		}
+		.chat {
+			position: relative;
+			overflow-x: scroll;
+			@include flex;
+			flex-direction: column;
+			padding: 0 20px;
+			justify-content: left;
+			align-items: flex-end;
+			min-width: 400px;
+			min-height: 600px;
+			max-height: 600px;
+			border-left: 5px solid black;
+			.message-area {
+				flex: 1;
+				@include flex;
+				align-items: flex-end;
+				justify-content: flex-end;
+				flex-direction: column;
+				width: 100%;
+				margin-bottom: 10px;
+				.message {
+					width: fit-content;
+					padding: 5px 10px;
+					border-radius: 15px;
+					background-color: rgb(35, 90, 134);
+					margin-bottom: 7px;
+					color: white;
+				}
+			}
+			.input-area {
+				position: sticky;
+				bottom: 0;
+				@include flex;
+				justify-content: space-between;
+				width: 100%;
+				background-color: $bg;
+				input {
+					width: 100%;
+					margin-top: 10px;
+					margin-right: 10px;
+				}
+			}
+		}
+	}
+}
