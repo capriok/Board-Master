@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css?family=Alegreya+Sans+SC:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap");
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background-color: darken(white, 40%);
+}
+::-webkit-scrollbar-thumb {
+  background-color: darken(white, 70%);
+  border-radius: 5px;
+}
+::-webkit-scrollbar:horizontal {
+  height: 7px;
+}
+::-webkit-scrollbar-track:horizontal {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  background-color: darken(white, 70%);
+  border-radius: 5px;
+}
+
+* {
+  box-sizing: border-box;
+  line-height: 1.5rem;
+  font-family: Roboto;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+h1 {
+  font-family: "Raleway", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.75px;
+}
+
+@media (max-width: 500px) {
+  input {
+    font-size: 16px;
+  }
+}

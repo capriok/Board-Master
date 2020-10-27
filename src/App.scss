@@ -1,0 +1,11 @@
+@mixin flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.App {
+  @include flex;
+  flex-direction: column;
+  height: 100vh;
+}
