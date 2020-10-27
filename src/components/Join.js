@@ -16,7 +16,7 @@ const Join = () => {
 	return (
 		<>
 			<Card>
-				<h1>Welcome to Code Efficiency</h1>
+				<h1>Welcome to NoEmmet</h1>
 				<br />
 				<center>
 					<Input
