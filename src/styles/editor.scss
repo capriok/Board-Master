@@ -4,27 +4,31 @@
 	@include flex;
 	flex-direction: column;
 	padding: 20px;
-	margin: 0 20px;
-	background-color: rgb(202, 191, 216);
+	margin-right: 20px;
 	max-width: 600px;
+	border-radius: 10px;
+	background-color: rgb(202, 191, 216);
 	.head {
 		@include flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		width: 100%;
-		padding: 10px 20px;
-	}
-	.button-cont {
-		button {
-			margin-right: 5px;
+		.name {
+			flex: 1;
+			text-transform: capitalize;
+			p {
+				margin: 0;
+				font-size: 1.2rem;
+			}
 		}
 	}
 	.stats-cont {
 		display: flex;
 	}
 	.main {
+		margin-bottom: 10px;
 		.text-area {
 			margin: 25px 0;
-			text-align: center;
+			text-align: left;
 			span {
 				font-size: 1.2rem;
 			}

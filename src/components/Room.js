@@ -2,7 +2,7 @@
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 import io from 'socket.io-client';
-import Editor from './Editor';
+import PlayingField from './PlayingField';
 
 import '../styles/room.scss'
 import { Input, Button } from 'godspeed';
@@ -11,6 +11,7 @@ const socket = io(process.env.REACT_APP_ENDPOINT)
 
 const Room = ({ params }) => {
 	const { name, room } = params
+	const [rSelected, setRSelected] = useState(50);
 
 	const endRef = useRef()
 
@@ -23,7 +24,6 @@ const Room = ({ params }) => {
 			socket.emit('join', { name, room })
 		})
 
-
 		socket.on('ok', () => {
 			console.log(socket);
 		})
@@ -32,17 +32,48 @@ const Room = ({ params }) => {
 		return () => socket.disconnect()
 	}, [])
 
+
+	const props = {
+		rSelected, name
+	}
+
 	return (
 		<div className="room-main">
 			<h1>Welcome to room {room}</h1>
 			<main>
 				<div className="editor">
-					<Editor />
+					<div className="button-cont">
+						<Button
+							text="25"
+							onClick={() => setRSelected(25)}
+							disabled={rSelected === 25} />
+						<Button
+							text="50"
+							onClick={() => setRSelected(50)}
+							disabled={rSelected === 50} />
+						<Button
+							text="100"
+							onClick={() => setRSelected(100)}
+							disabled={rSelected === 100} />
+					</div>
 					<br />
-					<Editor />
+					<PlayingField {...props} />
 				</div>
 				<div className="chat">
 					<div className="message-area">
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
+						<span className="message">message</span>
 						<span className="message">message</span>
 						<span className="message">message</span>
 						<span className="message">message</span>

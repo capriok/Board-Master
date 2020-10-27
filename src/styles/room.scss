@@ -3,14 +3,22 @@
 $bg: rgb(153, 164, 184);
 
 .room-main {
+	user-select: none;
 	@include flex;
 	flex-direction: column;
 	background-color: $bg;
+	padding: 20px;
 	main {
 		@include flex;
+		align-items: flex-end;
 		width: 100%;
 		.editor {
 			flex: 1;
+			.button-cont {
+				button {
+					margin-right: 5px;
+				}
+			}
 		}
 		.chat {
 			position: relative;
@@ -21,6 +29,7 @@ $bg: rgb(153, 164, 184);
 			justify-content: left;
 			align-items: flex-end;
 			min-width: 400px;
+			height: 100%;
 			min-height: 600px;
 			max-height: 600px;
 			border-left: 5px solid black;
