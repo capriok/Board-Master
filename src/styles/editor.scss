@@ -1,47 +1,70 @@
 @import "../index.scss";
 
-.editor-cont {
+.editor {
 	@include flex;
 	flex-direction: column;
-	padding: 20px;
-	margin-right: 20px;
-	max-width: 600px;
-	border-radius: 10px;
-	background-color: rgb(202, 191, 216);
-	.head {
+	justify-content: flex-start;
+	height: 100%;
+	.controls {
 		@include flex;
-		justify-content: flex-end;
+		justify-content: space-between;
 		width: 100%;
-		.name {
-			flex: 1;
-			text-transform: capitalize;
-			p {
-				margin: 0;
-				font-size: 1.2rem;
-			}
-		}
-	}
-	.stats-cont {
-		display: flex;
-	}
-	.main {
-		margin-bottom: 10px;
-		.text-area {
-			margin: 25px 0;
-			text-align: left;
-			span {
-				font-size: 1.2rem;
-			}
-		}
-		.input-area {
-			@include flex;
-			input {
-				flex: 1;
-				margin-right: 10px;
-			}
+		padding-right: 20px;
+		padding-bottom: 20px;
+		.button-cont {
 			button {
-				min-width: 75px;
+				margin-right: 5px;
 			}
+		}
+	}
+	.editors {
+		.editor-cont {
+			@include flex;
+			flex-direction: column;
+			padding: 20px;
+			margin-right: 20px;
+			max-width: 600px;
+			border-radius: 5px;
+			border: 2px solid slategrey;
+			background-color: $room-accent;
+			.head {
+				@include flex;
+				justify-content: flex-end;
+				width: 100%;
+				.name {
+					flex: 1;
+					text-transform: capitalize;
+					p {
+						margin: 0;
+						font-size: 1.2rem;
+					}
+				}
+			}
+			.stats-cont {
+				display: flex;
+			}
+			.body {
+				.text-area {
+					margin: 25px 0;
+					text-align: left;
+					span {
+						font-size: 1.1rem;
+					}
+				}
+				.input-area {
+					@include flex;
+					input {
+						flex: 1;
+						margin-right: 10px;
+					}
+					button {
+						min-width: 75px;
+					}
+				}
+			}
+		}
+		&:first-child .editor-cont {
+			margin-bottom: 20px;
 		}
 	}
 }

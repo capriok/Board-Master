@@ -1,0 +1,58 @@
+@import "../index.scss";
+
+.chat {
+	.chat-cont {
+		position: relative;
+		overflow-x: scroll;
+		min-width: 400px;
+		max-width: 400px;
+		min-height: 600px;
+		max-height: 600px;
+		@include flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		border-radius: 5px;
+		border: 2px solid slategrey;
+		background-color: $room-accent;
+	}
+	.message-area {
+		flex: 1;
+		@include flex;
+		align-items: flex-end;
+		justify-content: flex-end;
+		flex-direction: column;
+		width: 100%;
+		margin-bottom: 10px;
+		.other {
+			align-self: flex-start;
+		}
+		.message {
+			width: fit-content;
+			padding: 5px 10px;
+			margin: 0 10px;
+			border-radius: 15px;
+			background-color: rgb(35, 90, 134);
+			margin-bottom: 7px;
+			color: white;
+			&:first-child {
+				margin-top: 10px;
+			}
+		}
+	}
+	.input-area {
+		position: sticky;
+		bottom: 0;
+		left: 0;
+		@include flex;
+		justify-content: space-between;
+		width: 100%;
+		background-color: $room-accent;
+		input {
+			flex: 1;
+			margin: 0 10px;
+		}
+		button {
+			margin-right: 10px;
+		}
+	}
+}

@@ -29,6 +29,10 @@
   align-items: center;
 }
 
+$app-bg: rgb(100, 100, 100);
+$room-bg: rgb(200, 200, 200);
+$room-accent: rgb(180, 180, 180);
+
 * {
   box-sizing: border-box;
   line-height: 1.5rem;
@@ -53,5 +57,5 @@ h1 {
   @include flex;
   flex-direction: column;
   height: 100vh;
-  background-color: rgb(82, 82, 82);
+  background-color: $app-bg;
 }

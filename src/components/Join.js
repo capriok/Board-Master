@@ -1,43 +1,63 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { Card, Button, Input } from 'godspeed'
+import '../styles/join.scss'
+
+import { Button, Input } from 'godspeed'
 
 const Join = () => {
-	const history = useHistory()
-
+	const [rooms, setRooms] = useState([])
 	const [form, setForm] = useState({
-		name: 'kyle',
+		name: '',
 		room: 'one'
 	})
 
+	useEffect(() => {
+		(async () => {
+			let res = await fetch(process.env.REACT_APP_ENDPOINT + '/io/get-rooms')
+			let data = await res.json()
+			setRooms(data)
+		})()
+	}, [])
+
+	const history = useHistory()
+
 	return (
 		<>
-			<Card>
+			<div className="join-main">
 				<h1>Welcome to NoEmmet</h1>
-				<br />
-				<center>
+				<form id="join-form" className="input-area" onSubmit={e => {
+					e.preventDefault()
+					if (!form.name || !form.room) return
+					history.push(`/room/name=${form.name}&room=${form.room}`)
+				}}>
 					<Input
 						placeholder="Name"
 						value={form.name}
-						onChange={e => setForm({ ...form, name: e.target.value })}
-						underlined />
+						onChange={e => setForm({ ...form, name: e.target.value })} />
 					<Input
 						placeholder="Room"
 						value={form.room}
-						onChange={e => setForm({ ...form, room: e.target.value })}
-						underlined />
-				</center>
+						onChange={e => setForm({ ...form, room: e.target.value })} />
+				</form>
 				<br />
-				<center>
-					<Button text="Join!" onClick={() => {
-						if (!form.name || !form.room) return
-						history.push(`/room/name=${form.name}&room=${form.room}`)
-					}} />
-				</center>
-			</Card>
+				<div className="button-area">
+					{rooms.length > 0 &&
+						<span>Available Rooms: <select
+							value={form.room}
+							onChange={e => setForm({ ...form, room: e.target.value })}>
+							<option value="" disabled hidden>{rooms.length}</option>
+							{rooms.map((room, i) => (
+								<option key={i} value={room.name}>{room.name}</option>
+							))}
+						</select>
+						</span>
+					}
+					<Button form="join-form" type="submit" text="Join Room" />
+				</div>
+			</div>
 		</>
 	)
 }

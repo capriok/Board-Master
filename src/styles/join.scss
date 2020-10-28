@@ -1,0 +1,41 @@
+@import "../index.scss";
+
+.join-main {
+	@include flex;
+	flex-direction: column;
+	padding: 20px;
+	border-radius: 5px;
+	border: 2px solid slategrey;
+	background-color: rgb(211, 211, 211);
+	h1 {
+		text-align: center;
+		width: 100%;
+		padding-bottom: 20px;
+		border-bottom: 2px solid slategrey;
+	}
+	.input-area {
+		input {
+			border: 1px solid slategrey;
+			background-color: white;
+			&:first-child {
+				margin-right: 10px;
+			}
+		}
+	}
+	.button-area {
+		@include flex;
+		width: 100%;
+		justify-content: space-between;
+		button {
+			margin-left: auto;
+		}
+		select {
+			outline: none;
+			flex: 1;
+			padding: 5px;
+			margin-right: 10px;
+			border-radius: 5px;
+			border: 1px solid slategrey;
+		}
+	}
+}
