@@ -4,12 +4,14 @@ import '../styles/chat-users.scss'
 
 const Users = (props) => {
 
+	const { users, localUser, usersDropdown } = props
+
 	return (
 		<>
-			{props.usersOpen &&
+			{usersDropdown &&
 				<div className="users">
-					{props.users.map((u, i) => (
-						<p key={i}>{u.name}</p>
+					{users.map((u, i) => (
+						<p key={i}>{u.name}{u.userId === localUser.userId && " (You)"}</p>
 					))}
 				</div>
 			}

@@ -5,31 +5,32 @@ import React, { useState, useEffect } from "react"
 import '../styles/room-editors.scss'
 
 import { Button, Input } from 'godspeed'
+import RoomLobby from './room-lobby'
 
-const randomWords = require('random-words')
 
 const RoomGame = (props) => {
-	const { socket } = props
+	const { socket, lobby } = props
 
-	const [rSelected, setRSelected] = useState(50);
-
-	const WORD_SET = randomWords({ exactly: rSelected, maxLength: 5 })
+	const [wordCount, setWordCount] = useState(50);
 
 	const [accuracy, setAccuracy] = useState("?")
 	const [wpm, setWpm] = useState("?")
 	const [wordList, setWordList] = useState([])
 
+	useEffect(() => {
+		socket.on('editor-words', (payload) => {
+			console.log(payload)
+			setWordList(payload)
+		})
+	}, [])
 
 	function setWordSet() {
-		// socket.emit('word-set', {WORD_SET})
-		// setWordList(WORD_SET)
+		socket.emit('randomize-word_set', { wordCount })
 	}
 
 	useEffect(() => {
-
 		setWordSet();
-
-	}, [rSelected]);
+	}, [wordCount]);
 
 	return (
 		<div className="editors-main">
@@ -37,16 +38,16 @@ const RoomGame = (props) => {
 				<div className="button-cont">
 					<Button
 						text="25"
-						onClick={() => setRSelected(25)}
-						disabled={rSelected === 25} />
+						onClick={() => setWordCount(25)}
+						disabled={wordCount === 25} />
 					<Button
 						text="50"
-						onClick={() => setRSelected(50)}
-						disabled={rSelected === 50} />
+						onClick={() => setWordCount(50)}
+						disabled={wordCount === 50} />
 					<Button
 						text="100"
-						onClick={() => setRSelected(100)}
-						disabled={rSelected === 100} />
+						onClick={() => setWordCount(100)}
+						disabled={wordCount === 100} />
 
 				</div>
 				<Button text="Randomize" onClick={() => { setWordSet() }} />
@@ -56,7 +57,7 @@ const RoomGame = (props) => {
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{props.name}</p>
+							<p>{lobby.playerOne.name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>
@@ -80,7 +81,7 @@ const RoomGame = (props) => {
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>Opponent</p>
+							<p>{lobby.playerTwo.name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>

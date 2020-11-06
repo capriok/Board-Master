@@ -13,9 +13,14 @@ import { Button } from 'godspeed'
 const SocketRoom = ({ params }) => {
 	const { name, room } = params
 
+	const [lobby, setLobby] = useState({
+		playerOne: {},
+		playerTwo: {}
+	})
 	const [users, setUsers] = useState([])
 	const [localUser, setLocalUser] = useState({})
-	const [usersOpen, setUsersOpen] = useState(false)
+	const [roomHost, setRoomHost] = useState({})
+	const [usersDropdown, setUsersDropdown] = useState(false)
 	const [gameInSession, setInSession] = useState(false)
 
 	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT))
@@ -27,11 +32,17 @@ const SocketRoom = ({ params }) => {
 		socket.on('connect', () => {
 			console.log('Socket Connected', socket.connected)
 			socket.emit('join', { name, room })
+			setInSession(false)
 		})
 
 		socket.on('user-list', (list) => {
 			console.log('User List', list)
 			setUsers(list)
+		})
+
+		socket.on('room-host', (id) => {
+			console.log('Room Host', id)
+			setRoomHost(id)
 		})
 
 		socket.on('local-user', (user) => {
@@ -43,7 +54,15 @@ const SocketRoom = ({ params }) => {
 		return () => socket.disconnect()
 	}, [])
 
-	const props = { socket, name, room, users, localUser, usersOpen }
+	const props = {
+		socket,
+		name, room,
+		lobby, setLobby,
+		users, localUser,
+		roomHost,
+		usersDropdown,
+		setInSession
+	}
 
 	return (
 		<div className="room-main">
@@ -57,7 +76,7 @@ const SocketRoom = ({ params }) => {
 				</div>
 				<div className="chat">
 					<div className="toggle">
-						<Button text={`Show Users ${users.length}`} onClick={() => setUsersOpen(!usersOpen)} />
+						<Button text={`Show Users ${users.length}`} onClick={() => setUsersDropdown(!usersDropdown)} />
 					</div>
 					<RoomChat {...props} />
 				</div>

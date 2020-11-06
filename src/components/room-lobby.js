@@ -1,19 +1,19 @@
+/*eslint react-hooks/exhaustive-deps: "off"*/
+/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect } from 'react'
 
 import '../styles/room-lobby.scss'
 
 import { Button } from 'godspeed'
 
-const RoomLobby = (props) => {
-	const { socket, localUser } = props
+const randomWords = require('random-words')
 
-	const [lobby, setLobby] = useState({
-		playerOne: {},
-		playerTwo: {}
-	})
+const RoomLobby = (props) => {
+	const { socket, lobby, setLobby, roomHost, localUser, setInSession } = props
 
 	const isPlayer = Object.keys(lobby).some(slot => lobby[slot].userId === localUser.userId)
-	const isFull = Object.keys(lobby).every(slot => lobby[slot].userId !== undefined)
+	const isPlayerReady = Object.keys(lobby).some(slot => lobby[slot].userId === localUser.userId && lobby[slot].ready === true)
+	const isFull = Object.keys(lobby).every(slot => lobby[slot].name !== undefined)
 
 	function joinLobby() {
 		socket.emit('join-lobby', localUser)
@@ -29,42 +29,61 @@ const RoomLobby = (props) => {
 
 	useEffect(() => {
 		socket.on('lobby-list', (payload) => {
-			console.log(payload);
 			setLobby(payload)
 		})
 	}, [])
 
+	useEffect(() => {
+		const playersReady = Object.keys(lobby).every(slot => lobby[slot].ready === true)
+		let generator = setTimeout(() => {
+			if (playersReady) {
+				let wordSet = []
+				if (localUser.userId === roomHost) {
+					wordSet = randomWords({ exactly: 25, maxLength: 5 })
+				}
+				socket.emit('generate-editors', { lobby, wordSet })
+				setInSession(true)
+			}
+		}, 1000)
+		return () => clearTimeout(generator)
+	}, [lobby])
+
 	return (
 		<div className="lobby-main">
-			<div className="header">
-				<h1>Lobby</h1>
-			</div>
-			<div className="body">
-				{isFull &&
+			<div className="controls">
+				{(!isFull || isPlayer) &&
+					<Button
+						className="join-button"
+						text={isPlayer ? "Leave Lobby" : "Join Lobby"}
+						onClick={() => isPlayer ? leaveLobby() : joinLobby()} />}
+				{isPlayer &&
 					<Button
 						className="ready-button"
-						text="Ready up"
+						text={isPlayerReady ? "Not Ready" : "Ready up"}
 						onClick={() => readyUp()} />
 				}
-				<div className="members">
-					<div className="member-cont">
+				{(!isPlayer && isFull) &&
+					<div className="control-placeholder" />
+				}
+			</div>
+			<div className="body">
+				<h1 className="header">Lobby</h1>
+				<div className="players">
+					<div className="player-cont">
 						{lobby.playerOne.name
-							? <p className="member">{lobby.playerOne.ready && "✓ "}{lobby.playerOne.name}</p>
-							: <p className="member-placeholder" />
+							? <p className="player">{lobby.playerOne.ready && "✓ "}{lobby.playerOne.name}</p>
+							: <p className="player-placeholder" />
 						}
 					</div>
 					<p>vs.</p>
-					<div className="member-cont">
+					<div className="player-cont">
 						{lobby.playerTwo.name
-							? <p className="member">{lobby.playerTwo.ready && "✓ "}{lobby.playerTwo.name}</p>
-							: <p className="member-placeholder" />
+							? <p className="player">{lobby.playerTwo.name}{lobby.playerTwo.ready && " ✓"}</p>
+							: <p className="player-placeholder" />
 						}
 					</div>
 				</div>
-				<Button
-					className="join-button"
-					text={isPlayer ? "Leave Lobby" : "Join Lobby"}
-					onClick={() => isPlayer ? leaveLobby() : joinLobby()} />
+
 			</div>
 		</div>
 	)

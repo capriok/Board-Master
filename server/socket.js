@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { transferLeadership } = require('./class');
 const Rooms = require('./class')
 
 class Room {
@@ -7,9 +6,7 @@ class Room {
 		roomId,
 		name,
 		users = [],
-		lobby = {
-			playerOne: {}, playerTwo: {}
-		}
+		lobby = new Lobby()
 	) {
 		this.roomId = roomId
 		this.name = name
@@ -17,10 +14,18 @@ class Room {
 		this.lobby = lobby
 	}
 }
+
 class User {
 	constructor(userId, name) {
 		this.userId = userId
 		this.name = name
+	}
+}
+
+class Lobby {
+	constructor(playerOne = {}, playerTwo = {}) {
+		this.playerOne = playerOne
+		this.playerTwo = playerTwo
 	}
 }
 
@@ -50,10 +55,12 @@ function initialize(io) {
 			socket.to(ROOM).emit('new-message', {
 				name: NAME,
 				message: `${NAME} has joined.`,
+				serverMessage: true
 			})
 
 			io.to(ROOM).emit('user-list', Rooms.getUsers(ROOM))
 			io.to(ROOM).emit('lobby-list', Rooms.getLobbyPlayers(ROOM))
+			io.to(ROOM).emit('room-host', Rooms.getRoom(ROOM).roomId)
 			io.to(socket.id).emit('local-user', new User(socket.id, NAME))
 
 			console.log('USER ADDED - ROOMS USERS: ', Rooms.getUsers(ROOM))
@@ -73,7 +80,7 @@ function initialize(io) {
 
 		// // RECEIVE USER JOINING LOBBY
 		socket.on('join-lobby', (payload) => {
-			console.log('NEW LOBBY MEMBER: ', payload.name);
+			console.log('PLAYER JOINED: ', payload.name);
 			Rooms.addPlayer({ room: ROOM, player: new Player(payload.userId, payload.name) })
 			io.to(ROOM).emit('lobby-list', Rooms.getLobbyPlayers(ROOM))
 			console.log('NEW LOBBY: ', Rooms.getLobbyPlayers(ROOM));
@@ -83,7 +90,7 @@ function initialize(io) {
 
 		// // RECEIVE USER LEAVING LOBBY
 		socket.on('leave-lobby', (payload) => {
-			console.log('LOBBY MEMBER LEFT: ', payload.name);
+			console.log('PLAYER LEFT: ', payload.name);
 			Rooms.removePlayer({ room: ROOM, player: payload })
 			io.to(ROOM).emit('lobby-list', Rooms.getLobbyPlayers(ROOM))
 			console.log('NEW LOBBY: ', Rooms.getLobbyPlayers(ROOM));
@@ -93,10 +100,21 @@ function initialize(io) {
 
 		// // RECEIVE USER READY UP
 		socket.on('ready-up', (payload) => {
-			console.log('MEMBER IS READY: ', payload.name);
+			console.log('PLAYER IS READY: ', payload.name);
 			Rooms.readyPlayer({ room: ROOM, player: payload })
 			io.to(ROOM).emit('lobby-list', Rooms.getLobbyPlayers(ROOM))
-			console.log('READIED LOBBY: ', Rooms.getLobbyPlayers(ROOM));
+		})
+
+
+
+		// // RECEIVE FIELD GENERATION
+		socket.on('generate-editors', (payload) => {
+			console.log('PLAYERS: ', payload.lobby);
+			let hostsSet = []
+			Rooms.getRoom(ROOM).roomId === socket.id
+				? hostsSet = payload.wordSet
+				: hostsSet = []
+			setTimeout(() => io.to(ROOM).emit('editor-words', hostsSet), 50);
 		})
 
 
