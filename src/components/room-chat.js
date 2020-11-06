@@ -2,12 +2,12 @@
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 
-import '../styles/chat.scss'
+import '../styles/room-chat.scss'
 
-import Users from './Users';
-import { Input, Button } from 'godspeed';
+import Users from './chat-users'
+import { Input, Button } from 'godspeed'
 
-const Chat = (props) => {
+const RoomChat = (props) => {
 	const { socket } = props
 	const [inputMessage, setInputMessage] = useState('')
 	const [messages, setMessages] = useState([])
@@ -18,7 +18,7 @@ const Chat = (props) => {
 		endRef.current.scrollIntoView()
 
 		socket.on('new-message', (message) => {
-			console.log(message);
+			console.log('New Message', message);
 			setMessages(msgs => [...msgs, message])
 			endRef.current.scrollIntoView()
 		})
@@ -57,4 +57,4 @@ const Chat = (props) => {
 	)
 }
 
-export default Chat
+export default RoomChat

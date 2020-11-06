@@ -19,8 +19,18 @@
 		@include flex;
 		align-items: flex-end;
 		width: 100%;
-		.editor {
-			flex: 1;
+		.session {
+			@include flex;
+			flex-direction: column;
+			justify-content: flex-start;
+			min-width: 600px;
+			height: 100%;
+			margin-right: 20px;
+			.lobby-main,
+			.editors-main {
+				width: 100%;
+				flex: 1;
+			}
 		}
 		.chat {
 			.toggle {

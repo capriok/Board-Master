@@ -1,19 +1,22 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
-import io from 'socket.io-client';
+import io from 'socket.io-client'
 
-import '../styles/room.scss'
+import '../styles/socket-room.scss'
 
-import PlayingField from './PlayingField';
-import Chat from './Chat';
-import { Button } from 'godspeed';
+import RoomLobby from './room-lobby'
+import RoomEditors from './room-editors'
+import RoomChat from './room-chat'
+import { Button } from 'godspeed'
 
-const Room = ({ params }) => {
+const SocketRoom = ({ params }) => {
 	const { name, room } = params
 
 	const [users, setUsers] = useState([])
+	const [localUser, setLocalUser] = useState({})
 	const [usersOpen, setUsersOpen] = useState(false)
+	const [gameInSession, setInSession] = useState(false)
 
 	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT))
 	let socket = socketRef.current
@@ -22,37 +25,45 @@ const Room = ({ params }) => {
 
 		// Connect to socket
 		socket.on('connect', () => {
-			console.log('Socket Connected', socket.connected);
+			console.log('Socket Connected', socket.connected)
 			socket.emit('join', { name, room })
 		})
 
 		socket.on('user-list', (list) => {
-			console.log(list);
+			console.log('User List', list)
 			setUsers(list)
+		})
+
+		socket.on('local-user', (user) => {
+			console.log('Local User', user)
+			setLocalUser(user)
 		})
 
 		// Disconnect socket when Room unmounts
 		return () => socket.disconnect()
 	}, [])
 
-	const props = { socket, name, room, users, usersOpen }
+	const props = { socket, name, room, users, localUser, usersOpen }
 
 	return (
 		<div className="room-main">
 			<h1>Welcome to room {room}</h1>
 			<main>
-				<div className="editor">
-					<PlayingField {...props} />
+				<div className="session">
+					{!gameInSession
+						? <RoomLobby {...props} />
+						: <RoomEditors {...props} />
+					}
 				</div>
 				<div className="chat">
 					<div className="toggle">
 						<Button text={`Show Users ${users.length}`} onClick={() => setUsersOpen(!usersOpen)} />
 					</div>
-					<Chat {...props} />
+					<RoomChat {...props} />
 				</div>
 			</main>
 		</div >
 	)
 }
 
-export default Room
+export default SocketRoom

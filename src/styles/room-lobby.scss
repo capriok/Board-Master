@@ -1,0 +1,64 @@
+@import "../index.scss";
+
+.lobby-main {
+	.header {
+		h1 {
+			margin-top: 0;
+			margin-bottom: 20px;
+			padding: 5px;
+			border: none;
+		}
+	}
+	.body {
+		align-self: flex-end;
+		@include flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+		width: 100%;
+		padding: 40px 0;
+		border-radius: 5px;
+		border: 2px solid slategrey;
+		background-color: $room-accent;
+		.ready-button {
+			margin-bottom: 40px;
+		}
+		.members {
+			p {
+				margin: 0;
+			}
+			@include flex;
+			.member {
+				margin: 0 10px;
+				width: 100px;
+				text-align: center;
+				text-transform: capitalize;
+			}
+			.member-placeholder {
+				height: 20px;
+				width: 100px;
+				margin: 0 10px;
+				border-radius: 5px;
+				background-color: slategray;
+				animation: placeholder 3s infinite;
+			}
+		}
+		.join-button {
+			margin-top: 40px;
+		}
+	}
+}
+
+@keyframes placeholder {
+	0% {
+		background-color: slategray;
+	}
+	25% {
+		background-color: rgba(87, 125, 143, 0.52);
+	}
+	25% {
+		background-color: rgba(108, 87, 143, 0.52);
+	}
+	100% {
+		background-color: slategray;
+	}
+}

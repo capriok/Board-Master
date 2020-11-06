@@ -1,5 +1,6 @@
 import React from 'react'
-import '../styles/users.scss'
+
+import '../styles/chat-users.scss'
 
 const Users = (props) => {
 

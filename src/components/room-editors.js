@@ -1,29 +1,38 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
-import React, { useState, useEffect } from "react";
-import '../styles/editor.scss'
-import { Button, Input } from 'godspeed';
+import React, { useState, useEffect } from "react"
+
+import '../styles/room-editors.scss'
+
+import { Button, Input } from 'godspeed'
+
 const randomWords = require('random-words')
 
-const PlayingField = (props) => {
+const RoomGame = (props) => {
+	const { socket } = props
 
 	const [rSelected, setRSelected] = useState(50);
 
-	const [accuracy, setAccuracy] = useState("?");
-	const [wpm, setWpm] = useState("?");
-	const [wordList, setWordList] = useState(randomWords({ exactly: rSelected, maxLength: 5 }));
+	const WORD_SET = randomWords({ exactly: rSelected, maxLength: 5 })
+
+	const [accuracy, setAccuracy] = useState("?")
+	const [wpm, setWpm] = useState("?")
+	const [wordList, setWordList] = useState([])
 
 
-	function setText() {
-		setWordList(randomWords({ exactly: rSelected, maxLength: 5 }))
+	function setWordSet() {
+		// socket.emit('word-set', {WORD_SET})
+		// setWordList(WORD_SET)
 	}
 
 	useEffect(() => {
-		setText();
+
+		setWordSet();
+
 	}, [rSelected]);
 
 	return (
-		<>
+		<div className="editors-main">
 			<div className="controls">
 				<div className="button-cont">
 					<Button
@@ -40,9 +49,10 @@ const PlayingField = (props) => {
 						disabled={rSelected === 100} />
 
 				</div>
-				<Button text="Randomize" onClick={() => { setText() }} />
+				<Button text="Randomize" onClick={() => { setWordSet() }} />
 			</div>
 			<div className="editors">
+				{/* HOME CLIENT */}
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
@@ -58,12 +68,15 @@ const PlayingField = (props) => {
 								<span key={i}>{w} </span>
 							))}
 						</div>
-						<div className="input-area">
-							<Input placeholder="Good Luck!" onChange={() => { }} />
-						</div>
+						{wordList.length > 0 &&
+							<div className="input-area">
+								<Input placeholder="Good Luck!" onChange={() => { }} />
+							</div>
+						}
 					</div>
 				</div>
 				<br />
+				{/* AWAY CLIENT */}
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
@@ -82,8 +95,8 @@ const PlayingField = (props) => {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
 
-export default PlayingField
+export default RoomGame
