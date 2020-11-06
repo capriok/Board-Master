@@ -14,6 +14,7 @@
     "express": "^4.17.1",
     "lodash": "^4.17.20",
     "nodemon": "^2.0.6",
+    "random-words": "^1.1.1",
     "socket.io": "^2.3.0"
   }
 }
