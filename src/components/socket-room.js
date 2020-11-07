@@ -13,13 +13,15 @@ import { Button } from 'godspeed'
 const SocketRoom = ({ params }) => {
 	const { name, room } = params
 
+	const [User, setUser] = useState([])
+	const [HostId, setHostId] = useState([])
+
 	const [lobby, setLobby] = useState({
-		playerOne: {},
-		playerTwo: {}
+		players: [],
+		lastWinner: {},
+		playerCount: null
 	})
 	const [users, setUsers] = useState([])
-	const [localUser, setLocalUser] = useState({})
-	const [roomHost, setRoomHost] = useState({})
 	const [usersDropdown, setUsersDropdown] = useState(false)
 	const [gameInSession, setInSession] = useState(false)
 
@@ -35,19 +37,19 @@ const SocketRoom = ({ params }) => {
 			setInSession(false)
 		})
 
-		socket.on('user-list', (list) => {
+		socket.on('room-users', (list) => {
 			console.log('User List', list)
 			setUsers(list)
 		})
 
 		socket.on('room-host', (id) => {
 			console.log('Room Host', id)
-			setRoomHost(id)
+			setHostId(id)
 		})
 
 		socket.on('local-user', (user) => {
 			console.log('Local User', user)
-			setLocalUser(user)
+			setUser(user)
 		})
 
 		// Disconnect socket when Room unmounts
@@ -58,8 +60,8 @@ const SocketRoom = ({ params }) => {
 		socket,
 		name, room,
 		lobby, setLobby,
-		users, localUser,
-		roomHost,
+		users, User,
+		HostId,
 		usersDropdown,
 		setInSession
 	}

@@ -7,15 +7,10 @@ import '../styles/room-editors.scss'
 import { Input } from 'godspeed'
 
 const RoomEditors = (props) => {
-	const { socket, lobby, localUser } = props
+	const { socket, lobby, User } = props
 
-	let localPlayer
-	let foreignPlayer
-	Object.keys(lobby).forEach(slot => {
-		lobby[slot].userId === localUser.userId
-			? localPlayer = slot
-			: foreignPlayer = slot
-	})
+	let localPlayer = lobby.players.find(p => p.userId === User.userId)
+	let foreignPlayer = lobby.players.find(p => p.userId !== User.userId)
 
 	const [accuracy, setAccuracy] = useState("...")
 	const [wpm, setWpm] = useState("...")
@@ -52,7 +47,7 @@ const RoomEditors = (props) => {
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{lobby[localPlayer].name}</p>
+							<p>{localPlayer.name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>
@@ -70,7 +65,7 @@ const RoomEditors = (props) => {
 								))
 							}
 						</div>
-						{init.loading || wordList.length > 0 &&
+						{(init.loading || wordList.length > 0) &&
 							<div className="input-area">
 								<Input placeholder="Good Luck!" onChange={() => { }} />
 							</div>
@@ -82,7 +77,7 @@ const RoomEditors = (props) => {
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{lobby[foreignPlayer].name}</p>
+							<p>{foreignPlayer.name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>

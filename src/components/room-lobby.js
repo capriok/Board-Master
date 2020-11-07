@@ -1,6 +1,6 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import '../styles/room-lobby.scss'
 
@@ -9,36 +9,37 @@ import { Button } from 'godspeed'
 const randomWords = require('random-words')
 
 const RoomLobby = (props) => {
-	const { socket, lobby, setLobby, roomHost, localUser, setInSession } = props
+	const { socket, lobby, setLobby, User, HostId, setInSession } = props
 
-	const isPlayer = Object.keys(lobby).some(slot => lobby[slot].userId === localUser.userId)
-	const isPlayerReady = Object.keys(lobby).some(slot => lobby[slot].userId === localUser.userId && lobby[slot].ready === true)
-	const isFull = Object.keys(lobby).every(slot => lobby[slot].name !== undefined)
+	const isPlayer = lobby.players.some(player => player.userId === User.userId)
+	const isPlayerReady = lobby.players.some(player => player.userId === User.userId && player.ready === true)
+	const isFull = lobby.playerCount === 2
 
 	function joinLobby() {
-		socket.emit('join-lobby', localUser)
+		socket.emit('join-lobby', User)
 	}
 
 	function leaveLobby() {
-		socket.emit('leave-lobby', localUser)
+		socket.emit('leave-lobby', User)
 	}
 
 	function readyUp() {
-		socket.emit('ready-up', localUser)
+		socket.emit('ready-up', User)
 	}
 
 	useEffect(() => {
-		socket.on('lobby-list', (payload) => {
-			setLobby(payload)
+		socket.on('room-lobby', (lobby) => {
+			console.log('LOBBY', lobby);
+			setLobby(lobby)
 		})
 	}, [])
 
 	useEffect(() => {
-		const playersReady = Object.keys(lobby).every(slot => lobby[slot].ready === true)
+		const playersReady = lobby.players.length === 2 && lobby.players.every(p => p.ready === true)
 		let generator = setTimeout(() => {
 			if (playersReady) {
 				let wordSet = []
-				if (localUser.userId === roomHost) {
+				if (User.userId === HostId) {
 					wordSet = randomWords({ exactly: 25, maxLength: 5 })
 				}
 				socket.emit('generate-editors', { lobby, wordSet })
@@ -70,20 +71,37 @@ const RoomLobby = (props) => {
 				<h1 className="header">Lobby</h1>
 				<div className="players">
 					<div className="player-cont">
-						{lobby.playerOne.name
-							? <p className="player">{lobby.playerOne.ready && "✓ "}{lobby.playerOne.name}</p>
+						{lobby.players.length > 0 && lobby.players[0].name
+							? <p className="player">{lobby.players[0].ready && "✓ "}{lobby.players[0].name}</p>
 							: <p className="player-placeholder" />
 						}
 					</div>
 					<p>vs.</p>
 					<div className="player-cont">
-						{lobby.playerTwo.name
-							? <p className="player">{lobby.playerTwo.name}{lobby.playerTwo.ready && " ✓"}</p>
+						{lobby.players.length > 1 && lobby.players[1].name
+							? <p className="player">{lobby.players[1].name}{lobby.players[1].ready && " ✓"}</p>
 							: <p className="player-placeholder" />
 						}
 					</div>
 				</div>
+				{/* <div div className="controls" >
+					<div className="button-cont">
+						<Button
+							text="25"
+							onClick={() => setWordCount(25)}
+							disabled={wordCount === 25} />
+						<Button
+							text="50"
+							onClick={() => setWordCount(50)}
+							disabled={wordCount === 50} />
+						<Button
+							text="100"
+							onClick={() => setWordCount(100)}
+							disabled={wordCount === 100} />
 
+					</div>
+					<Button text="Randomize" onClick={() => { setWordSet() }} />
+				</div> */}
 			</div>
 		</div>
 	)
@@ -93,33 +111,14 @@ export default RoomLobby
 
 
 
-// const [wordCount, setWordCount] = useState(50);
+	// const [wordCount, setWordCount] = useState(50);
 
 
-// function setWordSet() {
-// 	socket.emit('randomize-word_set', { wordCount })
-// }
+	// function setWordSet() {
+	// 	socket.emit('randomize-word_set', { wordCount })
+	// }
 
-// useEffect(() => {
-// 	setWordSet();
-// }, [wordCount]);
+	// useEffect(() => {
+	// 	setWordSet();
+	// }, [wordCount]);
 
-
-{/* <div className="controls">
-<div className="button-cont">
-	<Button
-		text="25"
-		onClick={() => setWordCount(25)}
-		disabled={wordCount === 25} />
-	<Button
-		text="50"
-		onClick={() => setWordCount(50)}
-		disabled={wordCount === 50} />
-	<Button
-		text="100"
-		onClick={() => setWordCount(100)}
-		disabled={wordCount === 100} />
-
-</div>
-<Button text="Randomize" onClick={() => { setWordSet() }} />
-</div> */}

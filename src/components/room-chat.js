@@ -8,7 +8,7 @@ import Users from './chat-users'
 import { Input, Button } from 'godspeed'
 
 const RoomChat = (props) => {
-	const { socket, localUser } = props
+	const { socket, User } = props
 	const [inputMessage, setInputMessage] = useState('')
 	const [messages, setMessages] = useState([])
 
@@ -19,11 +19,9 @@ const RoomChat = (props) => {
 		if (m.serverMessage) return
 		if (i > 0) {
 			if (messages[i - 1].name === m.name) {
-				if (messages[i - 1].serverMessage) {
-					first = true
-				} else {
-					first = false
-				}
+				messages[i - 1].serverMessage
+					? first = true
+					: first = false
 			}
 		}
 		return first
@@ -51,7 +49,7 @@ const RoomChat = (props) => {
 				<Users {...props} />
 				<div className="message-area">
 					{messages.map((m, i) => {
-						const isLocalUser = m.name === localUser.name
+						const isLocalUser = m.name === User.name
 						return (
 							<div key={i} className={isLocalUser ? "message" : "message other"}>
 								{firstOfSender(m, i) &&
