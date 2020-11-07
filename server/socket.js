@@ -107,14 +107,12 @@ function initialize(io) {
 
 
 
-		// // RECEIVE FIELD GENERATION
+		// // RECEIVE EDITORS GENERATION
 		socket.on('generate-editors', (payload) => {
 			console.log('PLAYERS: ', payload.lobby);
-			let hostsSet = []
 			Rooms.getRoom(ROOM).roomId === socket.id
-				? hostsSet = payload.wordSet
-				: hostsSet = []
-			setTimeout(() => io.to(ROOM).emit('editor-words', hostsSet), 50);
+				? setTimeout(() => io.to(ROOM).emit('editor-words', payload.wordSet), 5000)
+				: io.to(ROOM).emit('editor-words', payload.wordSet)
 		})
 
 
@@ -146,9 +144,7 @@ function initialize(io) {
 				Rooms.removeRoom(ROOM)
 				console.log('ROOM REMOVED - ALL ROOMS', Rooms.getRooms())
 			}
-
 		})
-
 	})
 }
 

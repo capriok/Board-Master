@@ -90,3 +90,36 @@ const RoomLobby = (props) => {
 }
 
 export default RoomLobby
+
+
+
+// const [wordCount, setWordCount] = useState(50);
+
+
+// function setWordSet() {
+// 	socket.emit('randomize-word_set', { wordCount })
+// }
+
+// useEffect(() => {
+// 	setWordSet();
+// }, [wordCount]);
+
+
+{/* <div className="controls">
+<div className="button-cont">
+	<Button
+		text="25"
+		onClick={() => setWordCount(25)}
+		disabled={wordCount === 25} />
+	<Button
+		text="50"
+		onClick={() => setWordCount(50)}
+		disabled={wordCount === 50} />
+	<Button
+		text="100"
+		onClick={() => setWordCount(100)}
+		disabled={wordCount === 100} />
+
+</div>
+<Button text="Randomize" onClick={() => { setWordSet() }} />
+</div> */}

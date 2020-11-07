@@ -10,6 +10,7 @@
     "random-words": "^1.1.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
+    "react-icons": "^3.11.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "socket.io-client": "^2.3.1"

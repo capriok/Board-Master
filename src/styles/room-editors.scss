@@ -2,14 +2,9 @@
 
 .editors-main {
 	.controls {
-		@include flex;
-		justify-content: space-between;
-		width: 100%;
-		padding-bottom: 20px;
-		.button-cont {
-			button {
-				margin-right: 5px;
-			}
+		margin-bottom: 20px;
+		.control-placeholder {
+			height: 34px;
 		}
 	}
 	.editors {
@@ -62,5 +57,70 @@
 		&:first-child .editor-cont {
 			margin-bottom: 20px;
 		}
+	}
+}
+
+$grey: $room-accent;
+$lightgrey: rgb(86, 137, 179);
+$lightblue: rgb(19, 114, 192);
+$darkblue: rgb(17, 49, 80);
+
+.on-load {
+	@include flex;
+	position: relative;
+	width: 100%;
+	opacity: 0;
+	animation: fade 1s forwards;
+	.time {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%);
+	}
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.spinner {
+	margin: 0 auto;
+	pointer-events: none;
+	width: 40px;
+	height: 40px;
+	border: 2px solid transparent;
+	border-color: $grey;
+	border-top-color: $lightgrey;
+	border-radius: 50%;
+	animation: spin 1s, colour-wheel 3s;
+	animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotateZ(0);
+	}
+	100% {
+		transform: rotateZ(360deg);
+	}
+}
+
+@keyframes colour-wheel {
+	0% {
+		border-top-color: $lightgrey;
+	}
+	33% {
+		border-top-color: $lightblue;
+	}
+	66% {
+		border-top-color: $darkblue;
+	}
+	100% {
+		border-top-color: $lightgrey;
 	}
 }

@@ -4,18 +4,26 @@ import React, { useState, useEffect } from "react"
 
 import '../styles/room-editors.scss'
 
-import { Button, Input } from 'godspeed'
-import RoomLobby from './room-lobby'
+import { Input } from 'godspeed'
 
+const RoomEditors = (props) => {
+	const { socket, lobby, localUser } = props
 
-const RoomGame = (props) => {
-	const { socket, lobby } = props
+	let localPlayer
+	let foreignPlayer
+	Object.keys(lobby).forEach(slot => {
+		lobby[slot].userId === localUser.userId
+			? localPlayer = slot
+			: foreignPlayer = slot
+	})
 
-	const [wordCount, setWordCount] = useState(50);
-
-	const [accuracy, setAccuracy] = useState("?")
-	const [wpm, setWpm] = useState("?")
+	const [accuracy, setAccuracy] = useState("...")
+	const [wpm, setWpm] = useState("...")
 	const [wordList, setWordList] = useState([])
+	const [init, setInit] = useState({
+		loading: true,
+		time: 5
+	})
 
 	useEffect(() => {
 		socket.on('editor-words', (payload) => {
@@ -24,40 +32,27 @@ const RoomGame = (props) => {
 		})
 	}, [])
 
-	function setWordSet() {
-		socket.emit('randomize-word_set', { wordCount })
-	}
-
 	useEffect(() => {
-		setWordSet();
-	}, [wordCount]);
+		const countdown = setTimeout(() => {
+			setInit({ ...init, time: init.time - 1 })
+		}, 1000)
+		if (init.time < 0) {
+			clearTimeout(countdown)
+			setInit({ loading: false, time: 0 })
+		}
+	}, [init.time])
 
 	return (
 		<div className="editors-main">
 			<div className="controls">
-				<div className="button-cont">
-					<Button
-						text="25"
-						onClick={() => setWordCount(25)}
-						disabled={wordCount === 25} />
-					<Button
-						text="50"
-						onClick={() => setWordCount(50)}
-						disabled={wordCount === 50} />
-					<Button
-						text="100"
-						onClick={() => setWordCount(100)}
-						disabled={wordCount === 100} />
-
-				</div>
-				<Button text="Randomize" onClick={() => { setWordSet() }} />
+				<div className="control-placeholder" />
 			</div>
 			<div className="editors">
 				{/* HOME CLIENT */}
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{lobby.playerOne.name}</p>
+							<p>{lobby[localPlayer].name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>
@@ -65,11 +60,17 @@ const RoomGame = (props) => {
 					</div>
 					<div className="body">
 						<div className="text-area">
-							{wordList.map((w, i) => (
-								<span key={i}>{w} </span>
-							))}
+							{init.loading
+								? <div className="on-load">
+									<div className="time">{init.time}</div>
+									<div className="spinner" />
+								</div>
+								: wordList.map((w, i) => (
+									<span key={i}>{w} </span>
+								))
+							}
 						</div>
-						{wordList.length > 0 &&
+						{init.loading || wordList.length > 0 &&
 							<div className="input-area">
 								<Input placeholder="Good Luck!" onChange={() => { }} />
 							</div>
@@ -81,7 +82,7 @@ const RoomGame = (props) => {
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{lobby.playerTwo.name}</p>
+							<p>{lobby[foreignPlayer].name}</p>
 						</div>
 						<div className="stats-cont">
 							<span>Accuracy: {accuracy} | WPM: {wpm}</span>
@@ -89,9 +90,15 @@ const RoomGame = (props) => {
 					</div>
 					<div className="body">
 						<div className="text-area">
-							{wordList.map((w, i) => (
-								<span key={i}>{w} </span>
-							))}
+							{init.loading
+								? <div className="on-load">
+									<div className="time">{init.time}</div>
+									<div className="spinner" />
+								</div>
+								: wordList.map((w, i) => (
+									<span key={i}>{w} </span>
+								))
+							}
 						</div>
 					</div>
 				</div>
@@ -100,4 +107,4 @@ const RoomGame = (props) => {
 	);
 }
 
-export default RoomGame
+export default RoomEditors
