@@ -6,10 +6,8 @@ import '../styles/room-lobby.scss'
 
 import { Button } from 'godspeed'
 
-const randomWords = require('random-words')
-
 const RoomLobby = (props) => {
-	const { socket, lobby, setLobby, User, HostId, setInSession } = props
+	const { socket, lobby, setLobby, User, HostId } = props
 
 	const isPlayer = lobby.players.some(player => player.userId === User.userId)
 	const isPlayerReady = lobby.players.some(player => player.userId === User.userId && player.ready === true)
@@ -23,8 +21,8 @@ const RoomLobby = (props) => {
 		socket.emit('leave-lobby', User)
 	}
 
-	function readyUp() {
-		socket.emit('ready-up', User)
+	function setReady() {
+		socket.emit('set-ready', User)
 	}
 
 	useEffect(() => {
@@ -33,21 +31,6 @@ const RoomLobby = (props) => {
 			setLobby(lobby)
 		})
 	}, [])
-
-	useEffect(() => {
-		const playersReady = lobby.players.length === 2 && lobby.players.every(p => p.ready === true)
-		let generator = setTimeout(() => {
-			if (playersReady) {
-				let wordSet = []
-				if (User.userId === HostId) {
-					wordSet = randomWords({ exactly: 25, maxLength: 5 })
-				}
-				socket.emit('generate-editors', { lobby, wordSet })
-				setInSession(true)
-			}
-		}, 1000)
-		return () => clearTimeout(generator)
-	}, [lobby])
 
 	return (
 		<div className="lobby-main">
@@ -61,7 +44,7 @@ const RoomLobby = (props) => {
 					<Button
 						className="ready-button"
 						text={isPlayerReady ? "Not Ready" : "Ready up"}
-						onClick={() => readyUp()} />
+						onClick={() => setReady()} />
 				}
 				{(!isPlayer && isFull) &&
 					<div className="control-placeholder" />

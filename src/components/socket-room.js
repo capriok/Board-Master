@@ -18,12 +18,11 @@ const SocketRoom = ({ params }) => {
 
 	const [lobby, setLobby] = useState({
 		players: [],
-		lastWinner: {},
-		playerCount: null
+		playersReady: false,
+		inSession: false,
 	})
 	const [users, setUsers] = useState([])
 	const [usersDropdown, setUsersDropdown] = useState(false)
-	const [gameInSession, setInSession] = useState(false)
 
 	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT))
 	let socket = socketRef.current
@@ -34,7 +33,6 @@ const SocketRoom = ({ params }) => {
 		socket.on('connect', () => {
 			console.log('Socket Connected', socket.connected)
 			socket.emit('join', { name, room })
-			setInSession(false)
 		})
 
 		socket.on('room-users', (list) => {
@@ -57,13 +55,10 @@ const SocketRoom = ({ params }) => {
 	}, [])
 
 	const props = {
-		socket,
-		name, room,
+		socket, name, room,
 		lobby, setLobby,
-		users, User,
-		HostId,
-		usersDropdown,
-		setInSession
+		users, User, HostId,
+		usersDropdown
 	}
 
 	return (
@@ -71,7 +66,7 @@ const SocketRoom = ({ params }) => {
 			<h1>Welcome to room {room}</h1>
 			<main>
 				<div className="session">
-					{!gameInSession
+					{!lobby.playersReady
 						? <RoomLobby {...props} />
 						: <RoomEditors {...props} />
 					}

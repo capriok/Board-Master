@@ -1,4 +1,5 @@
 const { uniqBy, remove, isEmpty, uniq } = require('lodash')
+const { wordList } = require('random-words')
 
 class RoomsClass {
 	constructor() {
@@ -29,6 +30,7 @@ class RoomsClass {
 	}
 
 	removeUser({ room, user }) {
+		if (user === undefined) return
 		this.getRoom(room).users = this.getRoom(room).users.filter(u => u.userId !== user.userId)
 	}
 	removeRoom(room) {
@@ -40,6 +42,9 @@ class RoomsClass {
 
 	readyPlayer({ room, player }) {
 		this.getLobby(room).readyPlayer(player)
+	}
+	setWordSet({ room, wordSet }) {
+		this.getRoom(room).lobby.setWordSet(wordSet)
 	}
 	transferHost({ room, userId }) {
 		this.getRoom(room).roomId = userId
@@ -66,8 +71,11 @@ class UserClass {
 class LobbyClass {
 	constructor() {
 		this.players = []
-		this.lastWinner = {}
 		this.playerCount = this.players.length
+		this.wordSet = []
+		this.playersReady = false
+		this.inSession = false
+		// this.lastWinner = {}
 	}
 	getPlayers() {
 		return this.players
@@ -86,10 +94,20 @@ class LobbyClass {
 	}
 	readyPlayer(player) {
 		this.players.find(p => p.userId === player.userId).setReady()
+		if (this.playerCount === 2 && this.players.every(p => p.ready === true)) {
+			this.playersReady = true
+			console.log('ALL PLAYERS READY, DEVELOPING LOBBY');
+		}
 	}
-	setLastWinner(player) {
-		this.lastWinner = player
+	setInSession() {
+		this.inSession = !this.inSession
 	}
+	setWordSet(wordSet) {
+		this.wordSet = wordSet
+	}
+	// setLastWinner(player) {
+	// 	this.lastWinner = player
+	// }
 }
 
 class PlayerClass {
@@ -118,79 +136,3 @@ module.exports = {
 	UserClass,
 	PlayerClass
 }
-
-// class Rooms {
-// 	constructor() {
-// 		this.rooms = []
-// 	}
-
-// 	addRoom(room) {
-// 		if (!this.getRoom(room.name)) this.rooms.push(room)
-// 	}
-// 	addUser({ room, user }) {
-// 		let currentRoom = this.getRoom(room)
-// 		currentRoom.users = uniqBy([...currentRoom.users, user], 'name')
-// 	}
-// 	addPlayer({ room, player }) {
-// 		let currentRoom = this.getRoom(room)
-// 		let isPlayer = currentRoom.lobby.playerOne.userId === player.userId
-// 		if (isEmpty(currentRoom.lobby.playerOne)) {
-// 			currentRoom.lobby.playerOne = player
-// 		} else {
-// 			if (!isPlayer) {
-// 				currentRoom.lobby.playerTwo = player
-// 			}
-// 		}
-// 	}
-
-// 	getRoom(room) {
-// 		return this.rooms.find(rm => rm.name === room)
-// 	}
-// 	getRooms() {
-// 		return this.rooms
-// 	}
-// 	getUsers(room) {
-// 		const currentRoom = this.getRoom(room)
-// 		return currentRoom.users
-// 	}
-// 	getLobbyPlayers(room) {
-// 		const currentRoom = this.getRoom(room)
-// 		return currentRoom.lobby
-// 	}
-// 	getPlayerSlot({ room, player }) {
-// 		const players = this.getLobbyPlayers(room)
-// 		let playerSlot
-// 		Object.keys(players).forEach(slot => {
-// 			players[slot].userId === player.userId
-// 				? playerSlot = slot
-// 				: playerSlot
-// 		})
-// 		return playerSlot
-// 	}
-
-// 	removePlayer({ room, player }) {
-// 		let players = this.getLobbyPlayers(room)
-// 		let playerSlot = this.getPlayerSlot({ room, player })
-// 		players[playerSlot] = {}
-// 	}
-// 	removeUser({ room, user }) {
-// 		let currentRoom = this.getRoom(room)
-// 		currentRoom.users = currentRoom.users.filter(u => u.userId !== user.userId)
-// 	}
-// 	removeRoom(room) {
-// 		this.rooms = remove(this.rooms, r => r.name !== room)
-// 	}
-
-// 	readyPlayer({ room, player }) {
-// 		let players = this.getLobbyPlayers(room)
-// 		let playerSlot = this.getPlayerSlot({ room, player })
-// 		players[playerSlot].ready = !players[playerSlot].ready
-// 	}
-// 	transferHost({ room, userId }) {
-// 		let currentRoom = this.getRoom(room)
-// 		currentRoom.roomId = userId
-// 	}
-
-// }
-
-// module.exports = new Rooms

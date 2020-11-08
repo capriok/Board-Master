@@ -55,8 +55,6 @@ function initialize(io) {
 			console.log('NEW LOBBY: ', Rooms.getLobby(Room.name));
 		})
 
-
-
 		// // RECEIVE USER LEAVING LOBBY
 		socket.on('leave-lobby', (payload) => {
 			console.log('PLAYER LEFT: ', payload.name);
@@ -65,10 +63,8 @@ function initialize(io) {
 			console.log('NEW LOBBY: ', Rooms.getLobby(Room.name));
 		})
 
-
-
 		// // RECEIVE USER READY UP
-		socket.on('ready-up', (payload) => {
+		socket.on('set-ready', (payload) => {
 			console.log('PLAYER IS READY: ', payload.name);
 			Rooms.readyPlayer({ room: Room.name, player: payload })
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
@@ -76,12 +72,32 @@ function initialize(io) {
 
 
 
-		// // RECEIVE EDITORS GENERATION
-		socket.on('generate-editors', (payload) => {
-			console.log('PLAYERS: ', payload.lobby);
-			Rooms.getRoom(Room.name).roomId === socket.id
-				? setTimeout(() => io.to(Room.name).emit('editor-words', payload.wordSet), 5000)
-				: io.to(Room.name).emit('editor-words', payload.wordSet)
+		// // RECEIVE LOBBY DEVELOPMENT
+		socket.on('lobby-development', (payload) => {
+			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
+			if (isHost) {
+				Rooms.setWordSet({ room: Room.name, wordSet: payload.wordSet });
+				console.log('WORDSET', payload.wordSet);
+				setTimeout(() => io.to(Room.name).emit('lobby-words', payload.wordSet), 2500)
+			} else {
+				io.to(Room.name).emit('lobby-words', payload.wordSet)
+			}
+		})
+
+		// // RECEIVE LOBBY START
+		socket.on('lobby-start', () => {
+			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
+			isHost && console.log('STARTING COUNTDOWN');
+			let counter = 5
+			let countdown = setInterval(() => {
+				io.to(Room.name).emit('lobby-countdown', counter)
+				isHost && counter > 0 && console.log(counter)
+				counter--
+				if (counter < 0) {
+					clearInterval(countdown)
+					Rooms.getRoom(Room.name).lobby.setInSession()
+				}
+			}, 1000)
 		})
 
 
