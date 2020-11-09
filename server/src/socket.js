@@ -102,15 +102,49 @@ function initialize(io) {
 				if (isHost) {
 					counter > 0 && console.log(counter)
 					if (counter === 0) {
-						Rooms.getRoom(Room.name).lobby.setInSession()
+						Rooms.getLobby(Room.name).setInSession()
 						io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 					}
 				}
 				counter--
-				if (counter < 0) {
-					clearInterval(countdown)
-				}
+				counter < 0 && clearInterval(countdown)
 			}, 1000)
+		})
+
+		// // RECEIVE LOBBY START TIME
+		socket.on('lobby-start-time', () => {
+			Rooms.getLobby(Room.name).setStartTime()
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+		})
+
+		// // RECEIVE PLAYER CURRENT INDEX
+		socket.on('player-current-index', (payload) => {
+			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
+			player.setCurrentIndex(payload.currentIndex)
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+		})
+
+		// // RECEIVE PLAYER CURRENT INDEX
+		socket.on('player-word-classes', (payload) => {
+			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
+			player.setWordClasses(payload.wordClasses)
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+		})
+
+		// // RECEIVE PLAYER ACC
+		socket.on('player-acc', (payload) => {
+			console.log('PLAYER ACC', payload.acc)
+			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
+			player.setAccuracy(payload.acc)
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+		})
+
+		// // RECEIVE PLAYER WPM
+		socket.on('player-wpm', (payload) => {
+			console.log('PLAYER WPM', payload.wpm)
+			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
+			player.setWpm(payload.wpm)
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
 

@@ -12,28 +12,23 @@ const RoomEditors = (props) => {
 	const { socket, lobby, User, HostId } = props
 
 	const isHost = User.userId === HostId
-	const isPlayer = lobby.players.some(player => player.userId === User.userId)
+	const isPlayer = lobby.players.some(p => p.userId === User.userId)
 	let localPlayer = lobby.players.find(p => p.userId === User.userId)
 	let foreignPlayer = lobby.players.find(p => p.userId !== User.userId)
 
-	const [acc, setAcc] = useState(0)
-	const [wpm, setWPM] = useState(0)
 	const [loading, setLoading] = useState(true)
 	const [count, setCount] = useState(null)
 	const [wordSet, setWordSet] = useState([])
 	const [wordInput, setWordInput] = useState('')
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const [wordClasses, setwordClasses] = useState([])
-	const [startTime, setStartTime] = useState(null)
 	const [correctKeys, setCorrectKeys] = useState(0)
 
 	useEffect(() => {
 		if (!lobby.inSession) {
-			if (lobby.playersReady) {
-				let wordSet = []
-				if (isHost) wordSet = randomWords({ exactly: 25, maxLength: 5 })
-				socket.emit('lobby-development', { wordSet })
-			}
+			let wordSet = []
+			if (isHost) wordSet = randomWords({ exactly: 5, maxLength: 8 })
+			socket.emit('lobby-development', { wordSet })
 			socket.on('lobby-words', (wordSet) => setWordSet(wordSet))
 			socket.on('lobby-countdown', (count) => setCount(count))
 		} else {
@@ -50,7 +45,10 @@ const RoomEditors = (props) => {
 	}, [wordSet])
 
 	useEffect(() => {
-		if (count === 0) setLoading(false)
+		if (count === 0) {
+			setLoading(false)
+			socket.emit('lobby-start-time')
+		}
 	}, [count])
 
 	function inputChange(e) {
@@ -61,11 +59,13 @@ const RoomEditors = (props) => {
 
 	function incrementIndex() {
 		setCurrentIndex(currentIndex + 1)
+		socket.emit('player-current-index', { player: User, currentIndex: currentIndex + 1 })
 		setWordInput('')
 	}
 
 	function setCurrentClass(evaluation) {
 		setwordClasses([...wordClasses, evaluation])
+		socket.emit('player-word-classes', { player: User, wordClasses: [...wordClasses, evaluation] })
 		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length)
 		incrementIndex()
 	}
@@ -90,25 +90,39 @@ const RoomEditors = (props) => {
 
 	function calculate() {
 		let totalChars = 0
-		let wordsTyped = correctKeys / 5
-		let timeTaken = (Date.now() - startTime) / 1000 / 60
+		let words = correctKeys / 5
+		let minute = (Date.now() - lobby.startTime) / 1000 / 60
 		wordSet.forEach(w => totalChars += w.length)
-		setAcc(Math.floor((correctKeys / totalChars) * 100))
-		setWPM(Math.floor(wordsTyped / timeTaken))
+		socket.emit('player-acc', { player: User, acc: Math.floor((correctKeys / totalChars) * 100) })
+		socket.emit('player-wpm', { player: User, wpm: Math.floor(words / minute) })
 	}
 
 	useEffect(() => {
-		wordInput !== '' && currentIndex === 0 && setStartTime(Date.now())
-	}, [wordInput])
-
-	useEffect(() => {
-		currentIndex === wordSet.length && calculate()
+		if (wordSet.length > 0) currentIndex === wordSet.length && calculate()
 	}, [currentIndex])
 
-	function wordClass(i) {
-		return i === currentIndex
-			? 'current'
-			: wordClasses[i]
+	function p1WordClass(i) {
+		if (isPlayer) {
+			return i === localPlayer.currentIndex
+				? 'current'
+				: localPlayer.wordClasses[i]
+		} else {
+			return i === lobby.players[0].currentIndex
+				? 'current'
+				: lobby.players[0].wordClasses[i]
+		}
+	}
+
+	function p2WordClass(i) {
+		if (isPlayer) {
+			return i === foreignPlayer.currentIndex
+				? 'current'
+				: foreignPlayer.wordClasses[i]
+		} else {
+			return i === lobby.players[1].currentIndex
+				? 'current'
+				: lobby.players[1].wordClasses[i]
+		}
 	}
 
 	return (
@@ -137,7 +151,7 @@ const RoomEditors = (props) => {
 									<div className="spinner" />
 								</div>
 								: wordSet.map((w, i) => (
-									<span className={wordClass(i)} key={i}>{w} </span>
+									<span className={p1WordClass(i)} key={i}>{w} </span>
 								))
 							}
 						</div>
@@ -160,8 +174,8 @@ const RoomEditors = (props) => {
 						</div>
 						<div className="stats-cont">
 							<span>
-								Accuracy: {isPlayer ? localPlayer.accuracy : lobby.players[0].accuracy} |
-								WPM: {isPlayer ? localPlayer.wpm : lobby.players[0].wpm}</span>
+								Accuracy: {isPlayer ? foreignPlayer.accuracy : lobby.players[1].accuracy} |
+								WPM: {isPlayer ? foreignPlayer.wpm : lobby.players[1].wpm}</span>
 						</div>
 					</div>
 					<div className="body">
@@ -172,7 +186,7 @@ const RoomEditors = (props) => {
 									<div className="spinner" />
 								</div>
 								: wordSet.map((w, i) => (
-									<span key={i}>{w} </span>
+									<span className={p2WordClass(i)} key={i}>{w} </span>
 								))
 							}
 						</div>

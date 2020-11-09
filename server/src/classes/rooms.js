@@ -63,6 +63,9 @@ class LobbyClass {
 		this.inSession = false
 		this.startTime = null
 	}
+	getPlayer(player) {
+		return this.players.find(p => p.userId === player.userId)
+	}
 	getPlayers() {
 		return this.players
 	}
@@ -111,8 +114,8 @@ class PlayerClass {
 	setReady() {
 		this.ready = !this.ready
 	}
-	setCurrentIndex(index) {
-		this.currentIndex = index
+	setCurrentIndex(currentIndex) {
+		this.currentIndex = currentIndex
 	}
 	setWordClasses(classes) {
 		this.wordClasses = classes
@@ -121,7 +124,7 @@ class PlayerClass {
 		this.accuracy = val
 	}
 	setWpm(val) {
-		this.WPM = val
+		this.wpm = val
 	}
 }
 
