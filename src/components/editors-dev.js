@@ -5,53 +5,20 @@ import React, { useState, useEffect } from "react"
 import '../styles/room-editors.scss'
 
 import { Input } from 'godspeed'
+import { waitForDomChange } from '@testing-library/react'
 
 const randomWords = require('random-words')
 
-const RoomEditors = (props) => {
-	const { socket, lobby, User, HostId } = props
-
-	const isHost = User.userId === HostId
-	const isPlayer = lobby.players.some(player => player.userId === User.userId)
-	let localPlayer = lobby.players.find(p => p.userId === User.userId)
-	let foreignPlayer = lobby.players.find(p => p.userId !== User.userId)
+const EditorsDev = () => {
 
 	const [acc, setAcc] = useState(0)
 	const [wpm, setWPM] = useState(0)
-	const [loading, setLoading] = useState(true)
-	const [count, setCount] = useState(null)
-	const [wordSet, setWordSet] = useState([])
+	const [wordSet, setWordSet] = useState(randomWords({ exactly: 5, maxLength: 5 }))
 	const [wordInput, setWordInput] = useState('')
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const [wordClasses, setwordClasses] = useState([])
 	const [startTime, setStartTime] = useState(null)
 	const [correctKeys, setCorrectKeys] = useState(0)
-
-	useEffect(() => {
-		if (!lobby.inSession) {
-			if (lobby.playersReady) {
-				let wordSet = []
-				if (isHost) wordSet = randomWords({ exactly: 25, maxLength: 5 })
-				socket.emit('lobby-development', { wordSet })
-			}
-			socket.on('lobby-words', (wordSet) => setWordSet(wordSet))
-			socket.on('lobby-countdown', (count) => setCount(count))
-		} else {
-			setLoading(false)
-			setWordSet(lobby.wordSet)
-		}
-	}, [])
-
-	useEffect(() => {
-		if (wordSet.length > 0) {
-			if (lobby.inSession) return
-			socket.emit('lobby-start')
-		}
-	}, [wordSet])
-
-	useEffect(() => {
-		if (count === 0) setLoading(false)
-	}, [count])
 
 	function inputChange(e) {
 		if (currentIndex !== wordSet.length) {
@@ -117,64 +84,30 @@ const RoomEditors = (props) => {
 				<div className="control-placeholder" />
 			</div>
 			<div className="editors">
-				{/* LOCAL CLIENT */}
+				{/* HOME CLIENT */}
 				<div className="editor-cont">
 					<div className="head">
 						<div className="name">
-							<p>{isPlayer ? localPlayer.name : lobby.players[0].name}</p>
+							<p>dev</p>
 						</div>
 						<div className="stats-cont">
 							<span>
-								Accuracy: {isPlayer ? localPlayer.accuracy : lobby.players[0].accuracy} |
-								WPM: {isPlayer ? localPlayer.wpm : lobby.players[0].wpm}</span>
+								Accuracy: {acc} | WPM: {wpm}
+							</span>
 						</div>
 					</div>
 					<div className="body">
 						<div className="text-area">
-							{loading
-								? <div className="on-load">
-									<div className="time">{count}</div>
-									<div className="spinner" />
-								</div>
-								: wordSet.map((w, i) => (
-									<span className={wordClass(i)} key={i}>{w} </span>
-								))
+							{wordSet.map((w, i) => (
+								<span className={wordClass(i)} key={i}>{w} </span>
+							))
 							}
 						</div>
-						{(loading || wordSet.length > 0) && isPlayer &&
-							<div className="input-area">
-								<Input
-									onChange={(e) => inputChange(e)}
-									onKeyDown={(e) => checkWord(e)}
-									value={wordInput} />
-							</div>
-						}
-					</div>
-				</div>
-				<br />
-				{/* FOREIGN CLIENT */}
-				<div className="editor-cont">
-					<div className="head">
-						<div className="name">
-							<p>{isPlayer ? foreignPlayer.name : lobby.players[1].name}</p>
-						</div>
-						<div className="stats-cont">
-							<span>
-								Accuracy: {isPlayer ? localPlayer.accuracy : lobby.players[0].accuracy} |
-								WPM: {isPlayer ? localPlayer.wpm : lobby.players[0].wpm}</span>
-						</div>
-					</div>
-					<div className="body">
-						<div className="text-area">
-							{loading
-								? <div className="on-load">
-									<div className="time">{count}</div>
-									<div className="spinner" />
-								</div>
-								: wordSet.map((w, i) => (
-									<span key={i}>{w} </span>
-								))
-							}
+						<div className="input-area">
+							<Input
+								onChange={(e) => inputChange(e)}
+								onKeyDown={(e) => checkWord(e)}
+								value={wordInput} />
 						</div>
 					</div>
 				</div>
@@ -183,4 +116,4 @@ const RoomEditors = (props) => {
 	);
 }
 
-export default RoomEditors
+export default EditorsDev

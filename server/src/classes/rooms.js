@@ -23,28 +23,14 @@ class RoomsClass {
 		if (!this.getRoom(room.name)) this.rooms.push(room)
 	}
 	addUser({ room, user }) {
-		this.getRoom(room).users = uniqBy([...this.getRoom(room).users, user], 'name')
-	}
-	addPlayer({ room, player }) {
-		this.getLobby(room).addPlayer(player)
+		this.getRoom(room).users = uniqBy([...this.getRoom(room).users, user], 'userId')
 	}
 
 	removeUser({ room, user }) {
-		if (user === undefined) return
-		this.getRoom(room).users = this.getRoom(room).users.filter(u => u.userId !== user.userId)
+		this.getRoom(room).users = remove(this.getUsers(room), u => u.userId !== user.userId)
 	}
 	removeRoom(room) {
 		this.rooms = remove(this.rooms, r => r.name !== room)
-	}
-	removePlayer({ room, player }) {
-		this.getLobby(room).removePlayer(player)
-	}
-
-	readyPlayer({ room, player }) {
-		this.getLobby(room).readyPlayer(player)
-	}
-	setWordSet({ room, wordSet }) {
-		this.getRoom(room).lobby.setWordSet(wordSet)
 	}
 	transferHost({ room, userId }) {
 		this.getRoom(room).roomId = userId
@@ -75,10 +61,13 @@ class LobbyClass {
 		this.wordSet = []
 		this.playersReady = false
 		this.inSession = false
-		// this.lastWinner = {}
+		this.startTime = null
 	}
 	getPlayers() {
 		return this.players
+	}
+	getPlayerCount() {
+		return this.playerCount
 	}
 	addPlayer(player) {
 		if (this.playerCount < 2) {
@@ -94,20 +83,19 @@ class LobbyClass {
 	}
 	readyPlayer(player) {
 		this.players.find(p => p.userId === player.userId).setReady()
-		if (this.playerCount === 2 && this.players.every(p => p.ready === true)) {
-			this.playersReady = true
-			console.log('ALL PLAYERS READY, DEVELOPING LOBBY');
-		}
-	}
-	setInSession() {
-		this.inSession = !this.inSession
 	}
 	setWordSet(wordSet) {
 		this.wordSet = wordSet
 	}
-	// setLastWinner(player) {
-	// 	this.lastWinner = player
-	// }
+	setPlayersReady() {
+		this.playersReady = !this.playersReady
+	}
+	setInSession() {
+		this.inSession = !this.inSession
+	}
+	setStartTime() {
+		this.startTime = Date.now()
+	}
 }
 
 class PlayerClass {
@@ -115,16 +103,24 @@ class PlayerClass {
 		this.userId = userId
 		this.name = name
 		this.ready = false
-		this.accuracy = null
-		this.WMP = null
+		this.wordClasses = []
+		this.currentIndex = 0
+		this.accuracy = 0
+		this.wpm = 0
 	}
 	setReady() {
 		this.ready = !this.ready
 	}
+	setCurrentIndex(index) {
+		this.currentIndex = index
+	}
+	setWordClasses(classes) {
+		this.wordClasses = classes
+	}
 	setAccuracy(val) {
 		this.accuracy = val
 	}
-	setWPM(val) {
+	setWpm(val) {
 		this.WPM = val
 	}
 }

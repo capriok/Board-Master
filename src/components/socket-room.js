@@ -1,6 +1,7 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
+import { useHistory } from 'react-router-dom'
 import io from 'socket.io-client'
 
 import '../styles/socket-room.scss'
@@ -24,33 +25,37 @@ const SocketRoom = ({ params }) => {
 	const [users, setUsers] = useState([])
 	const [usersDropdown, setUsersDropdown] = useState(false)
 
+	const history = useHistory()
+
 	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT))
 	let socket = socketRef.current
 
 	useEffect(() => {
 
-		// Connect to socket
 		socket.on('connect', () => {
 			console.log('Socket Connected', socket.connected)
 			socket.emit('join', { name, room })
 		})
 
 		socket.on('room-users', (list) => {
-			console.log('User List', list)
+			console.log('User List', { list })
 			setUsers(list)
 		})
 
 		socket.on('room-host', (id) => {
-			console.log('Room Host', id)
+			console.log('Room Host', { id })
 			setHostId(id)
 		})
 
 		socket.on('local-user', (user) => {
-			console.log('Local User', user)
+			console.log('Local User', { user })
 			setUser(user)
 		})
 
-		// Disconnect socket when Room unmounts
+		socket.on('room-lobby', (lobby) => {
+			console.log('Lobby', { lobby });
+			setLobby(lobby)
+		})
 		return () => socket.disconnect()
 	}, [])
 
@@ -63,6 +68,10 @@ const SocketRoom = ({ params }) => {
 
 	return (
 		<div className="room-main">
+			<Button className="leave-room" text="Leave Room" onClick={() => {
+				socket.disconnect()
+				history.push('/')
+			}} />
 			<h1>Welcome to room {room}</h1>
 			<main>
 				<div className="session">

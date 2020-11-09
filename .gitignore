@@ -3,3 +3,4 @@
 
 .env
 /redparty
+/src/components/typingsRef.js

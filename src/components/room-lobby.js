@@ -7,7 +7,7 @@ import '../styles/room-lobby.scss'
 import { Button } from 'godspeed'
 
 const RoomLobby = (props) => {
-	const { socket, lobby, setLobby, User, HostId } = props
+	const { socket, lobby, User } = props
 
 	const isPlayer = lobby.players.some(player => player.userId === User.userId)
 	const isPlayerReady = lobby.players.some(player => player.userId === User.userId && player.ready === true)
@@ -24,13 +24,6 @@ const RoomLobby = (props) => {
 	function setReady() {
 		socket.emit('set-ready', User)
 	}
-
-	useEffect(() => {
-		socket.on('room-lobby', (lobby) => {
-			console.log('LOBBY', lobby);
-			setLobby(lobby)
-		})
-	}, [])
 
 	return (
 		<div className="lobby-main">

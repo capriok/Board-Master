@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import SocketJoin from './components/socket-join'
 import SocketRoom from './components/socket-room'
+import EditorsDev from './components/editors-dev'
 
 const App = () => {
   return (
@@ -15,6 +16,9 @@ const App = () => {
         )} />
         <Route path='/room/name=:name&room=:room' render={(props) => (
           <SocketRoom params={props.match.params} />
+        )} />
+        <Route path='/dev' render={() => (
+          <EditorsDev />
         )} />
       </Router>
     </div>

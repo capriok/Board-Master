@@ -8,6 +8,11 @@
 	padding: 20px;
 	border-radius: 10px;
 	box-shadow: 3px 3px 15px -5px black;
+	.leave-room {
+		position: absolute;
+		left: 10px;
+		bottom: 10px;
+	}
 	h1 {
 		text-align: center;
 		width: 100%;

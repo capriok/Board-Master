@@ -13,6 +13,7 @@
 			flex-direction: column;
 			padding: 20px;
 			max-width: 600px;
+			min-width: 600px;
 			border-radius: 5px;
 			border: 2px solid slategrey;
 			background-color: $room-accent;
@@ -37,8 +38,19 @@
 				.text-area {
 					margin: 25px 0;
 					text-align: left;
+					letter-spacing: 0.9px;
+					color: black;
 					span {
 						font-size: 1.1rem;
+					}
+					.current {
+						color: rgb(149, 52, 194);
+					}
+					.correct {
+						color: rgb(13, 119, 54);
+					}
+					.incorrect {
+						color: rgb(194, 10, 10);
 					}
 				}
 				.input-area {
