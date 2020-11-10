@@ -1,8 +1,8 @@
 import React from 'react'
 
-import '../styles/chat-users.scss'
+import '../../styles/chat/users-dropdown.scss'
 
-const Users = (props) => {
+const UsersDropdown = (props) => {
 
 	const { users, User, usersDropdown } = props
 
@@ -19,4 +19,4 @@ const Users = (props) => {
 	)
 }
 
-export default Users
+export default UsersDropdown

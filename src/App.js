@@ -3,22 +3,18 @@
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import SocketJoin from './components/socket-join'
-import SocketRoom from './components/socket-room'
-import EditorsDev from './components/editors-dev'
+import Join from './components/common/join'
+import Room from './components/common/room'
 
 const App = () => {
   return (
     <div className="App">
       <Router>
         <Route exact path='/' render={() => (
-          <SocketJoin />
+          <Join />
         )} />
         <Route path='/room/name=:name&room=:room' render={(props) => (
-          <SocketRoom params={props.match.params} />
-        )} />
-        <Route path='/dev' render={() => (
-          <EditorsDev />
+          <Room params={props.match.params} />
         )} />
       </Router>
     </div>

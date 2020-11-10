@@ -4,14 +4,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import io from 'socket.io-client'
 
-import '../styles/socket-room.scss'
+import '../../styles/common/room.scss'
 
-import RoomLobby from './room-lobby'
-import RoomEditors from './room-editors'
-import RoomChat from './room-chat'
+import PracticeEditor from '../lobby/practice-editor'
+import Lobby from '../lobby/lobby'
+import LobbyEditors from '../lobby/lobby-editors'
+import Chat from '../chat/chat'
 import { Button } from 'godspeed'
 
-const SocketRoom = ({ params }) => {
+const Room = ({ params }) => {
 	const { name, room } = params
 
 	const [User, setUser] = useState([])
@@ -21,9 +22,11 @@ const SocketRoom = ({ params }) => {
 		players: [],
 		playersReady: false,
 		inSession: false,
+		options: {}
 	})
 	const [users, setUsers] = useState([])
 	const [usersDropdown, setUsersDropdown] = useState(false)
+	const [practiceEditor, setPracticeEditor] = useState(false)
 
 	const history = useHistory()
 
@@ -63,6 +66,7 @@ const SocketRoom = ({ params }) => {
 		socket, name, room,
 		lobby, setLobby,
 		users, User, HostId,
+		practiceEditor, setPracticeEditor,
 		usersDropdown
 	}
 
@@ -75,20 +79,22 @@ const SocketRoom = ({ params }) => {
 			<h1>Welcome to room {room}</h1>
 			<main>
 				<div className="session">
-					{!lobby.playersReady
-						? <RoomLobby {...props} />
-						: <RoomEditors {...props} />
+					{practiceEditor
+						? <PracticeEditor {...props} />
+						: !lobby.playersReady
+							? <Lobby {...props} />
+							: <LobbyEditors {...props} />
 					}
 				</div>
 				<div className="chat">
 					<div className="toggle">
 						<Button text={`Show Users ${users.length}`} onClick={() => setUsersDropdown(!usersDropdown)} />
 					</div>
-					<RoomChat {...props} />
+					<Chat {...props} />
 				</div>
 			</main>
 		</div >
 	)
 }
 
-export default SocketRoom
+export default Room

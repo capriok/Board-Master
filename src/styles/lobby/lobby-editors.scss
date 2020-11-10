@@ -1,4 +1,4 @@
-@import "../index.scss";
+@import "../../index.scss";
 
 .editors-main {
 	.controls {
@@ -44,13 +44,14 @@
 						font-size: 1.1rem;
 					}
 					.current {
-						color: rgb(149, 52, 194);
+						font-weight: 600;
+						color: rgb(0, 0, 0);
 					}
 					.correct {
-						color: rgb(13, 119, 54);
+						color: rgb(4, 53, 117);
 					}
 					.incorrect {
-						color: rgb(194, 10, 10);
+						color: rgb(160, 4, 4);
 					}
 				}
 				.input-area {

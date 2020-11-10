@@ -58,6 +58,7 @@ class LobbyClass {
 	constructor() {
 		this.players = []
 		this.playerCount = this.players.length
+		this.options = { exactly: 25, maxLength: 5 }
 		this.wordSet = []
 		this.playersReady = false
 		this.inSession = false
@@ -72,6 +73,9 @@ class LobbyClass {
 	getPlayerCount() {
 		return this.playerCount
 	}
+	getOptions() {
+		return this.options
+	}
 	addPlayer(player) {
 		if (this.playerCount < 2) {
 			if (!this.players.some(p => p.userId === player.userId)) {
@@ -80,12 +84,8 @@ class LobbyClass {
 		}
 		this.playerCount = this.players.length
 	}
-	removePlayer(player) {
-		this.players = remove(this.players, p => p.userId !== player.userId)
-		this.playerCount = this.players.length
-	}
-	readyPlayer(player) {
-		this.players.find(p => p.userId === player.userId).setReady()
+	setOptions({ exactly, maxLength }) {
+		this.options = { exactly, maxLength }
 	}
 	setWordSet(wordSet) {
 		this.wordSet = wordSet
@@ -98,6 +98,13 @@ class LobbyClass {
 	}
 	setStartTime() {
 		this.startTime = Date.now()
+	}
+	removePlayer(player) {
+		this.players = remove(this.players, p => p.userId !== player.userId)
+		this.playerCount = this.players.length
+	}
+	readyPlayer(player) {
+		this.players.find(p => p.userId === player.userId).setReady()
 	}
 }
 

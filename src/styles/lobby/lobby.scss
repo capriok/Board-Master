@@ -1,4 +1,4 @@
-@import "../index.scss";
+@import "../../index.scss";
 
 .lobby-main {
 	.controls {
@@ -6,9 +6,12 @@
 		justify-content: space-between;
 		width: 100%;
 		padding-bottom: 20px;
-	}
-	.control-placeholder {
-		height: 34px;
+		.join-button {
+			margin-right: 10px;
+		}
+		.control-placeholder {
+			height: 34px;
+		}
 	}
 	.body {
 		align-self: flex-end;
@@ -21,7 +24,9 @@
 		background-color: $room-accent;
 		.header {
 			width: 100%;
-			margin-bottom: 0;
+			margin: 0;
+			padding-top: 20px;
+			background-color: $room-bg;
 		}
 		.players {
 			padding: 40px 0;

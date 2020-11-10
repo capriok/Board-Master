@@ -1,0 +1,36 @@
+@import "../../index.scss";
+
+.options-main {
+	@include flex;
+	flex-direction: column;
+	padding: 0 20px 20px 20px;
+	h1 {
+		margin: 0;
+		font-size: 1.4rem;
+		border: none;
+	}
+	.option-labels {
+		@include flex;
+		flex-direction: column;
+		label:not(:last-child) {
+			margin-bottom: 10px;
+		}
+		label {
+			@include flex;
+			justify-content: space-between;
+			width: 100%;
+			p {
+				margin: 0;
+				margin-right: 10px;
+			}
+			input {
+				font-size: 0.9rem;
+			}
+			.word-count-input,
+			.word-length-input {
+				min-width: 65px;
+				max-width: 65px;
+			}
+		}
+	}
+}

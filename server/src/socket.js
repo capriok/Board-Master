@@ -77,7 +77,12 @@ function initialize(io) {
 			}
 		})
 
-
+		// // RECEIVE LOBBY DEVELOPMENT
+		socket.on('lobby-options', (payload) => {
+			Rooms.getLobby(Room.name).setOptions(payload)
+			console.log('LOBBY OPTIONS: ', Rooms.getLobby(Room.name).getOptions());
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+		})
 
 		// // RECEIVE LOBBY DEVELOPMENT
 		socket.on('lobby-development', (payload) => {

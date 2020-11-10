@@ -1,13 +1,14 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
-import React, { useEffect } from 'react'
+import React from 'react'
 
-import '../styles/room-lobby.scss'
+import '../../styles/lobby/lobby.scss'
 
 import { Button } from 'godspeed'
+import LobbyOptions from './lobby-options'
 
-const RoomLobby = (props) => {
-	const { socket, lobby, User } = props
+const Lobby = (props) => {
+	const { socket, lobby, User, setPracticeEditor } = props
 
 	const isPlayer = lobby.players.some(player => player.userId === User.userId)
 	const isPlayerReady = lobby.players.some(player => player.userId === User.userId && player.ready === true)
@@ -28,17 +29,25 @@ const RoomLobby = (props) => {
 	return (
 		<div className="lobby-main">
 			<div className="controls">
-				{(!isFull || isPlayer) &&
-					<Button
-						className="join-button"
-						text={isPlayer ? "Leave Lobby" : "Join Lobby"}
-						onClick={() => isPlayer ? leaveLobby() : joinLobby()} />}
-				{isPlayer &&
-					<Button
-						className="ready-button"
-						text={isPlayerReady ? "Not Ready" : "Ready up"}
-						onClick={() => setReady()} />
-				}
+				<div>
+					{(!isFull || isPlayer) &&
+						<Button
+							className="join-button"
+							text={isPlayer ? "Leave Lobby" : "Join Lobby"}
+							onClick={() => isPlayer ? leaveLobby() : joinLobby()} />
+					}
+					{isPlayer &&
+						<Button
+							className="ready-button"
+							text={isPlayerReady ? "Not Ready" : "Ready up"}
+							onClick={() => setReady()} />
+					}
+				</div>
+				<Button
+					className="practice-button"
+					text="Practice ○"
+					onClick={() => setPracticeEditor(true)}
+					disabled={isPlayer} />
 				{(!isPlayer && isFull) &&
 					<div className="control-placeholder" />
 				}
@@ -60,30 +69,13 @@ const RoomLobby = (props) => {
 						}
 					</div>
 				</div>
-				{/* <div div className="controls" >
-					<div className="button-cont">
-						<Button
-							text="25"
-							onClick={() => setWordCount(25)}
-							disabled={wordCount === 25} />
-						<Button
-							text="50"
-							onClick={() => setWordCount(50)}
-							disabled={wordCount === 50} />
-						<Button
-							text="100"
-							onClick={() => setWordCount(100)}
-							disabled={wordCount === 100} />
-
-					</div>
-					<Button text="Randomize" onClick={() => { setWordSet() }} />
-				</div> */}
+				<LobbyOptions {...props} />
 			</div>
 		</div>
 	)
 }
 
-export default RoomLobby
+export default Lobby
 
 
 

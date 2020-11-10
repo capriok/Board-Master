@@ -2,13 +2,13 @@
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect } from "react"
 
-import '../styles/room-editors.scss'
+import '../../styles/lobby/lobby-editors.scss'
 
 import { Input } from 'godspeed'
 
 const randomWords = require('random-words')
 
-const RoomEditors = (props) => {
+const LobbyEditors = (props) => {
 	const { socket, lobby, User, HostId } = props
 
 	const isHost = User.userId === HostId
@@ -27,7 +27,7 @@ const RoomEditors = (props) => {
 	useEffect(() => {
 		if (!lobby.inSession) {
 			let wordSet = []
-			if (isHost) wordSet = randomWords({ exactly: 5, maxLength: 8 })
+			if (isHost) wordSet = randomWords({ exactly: lobby.options.exactly, maxLength: lobby.options.maxLength })
 			socket.emit('lobby-development', { wordSet })
 			socket.on('lobby-words', (wordSet) => setWordSet(wordSet))
 			socket.on('lobby-countdown', (count) => setCount(count))
@@ -197,4 +197,4 @@ const RoomEditors = (props) => {
 	);
 }
 
-export default RoomEditors
+export default LobbyEditors

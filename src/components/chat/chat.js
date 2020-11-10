@@ -2,9 +2,9 @@
 /*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 
-import '../styles/room-chat.scss'
+import '../../styles/chat/chat.scss'
 
-import Users from './chat-users'
+import UsersDropdown from './users-dropdown'
 import { Input, Button } from 'godspeed'
 
 const RoomChat = (props) => {
@@ -30,7 +30,7 @@ const RoomChat = (props) => {
 	useEffect(() => {
 		endRef.current.scrollIntoView()
 		socket.on('new-message', (message) => {
-			console.log('New Message', message);
+			console.log('New Message', { message });
 			setMessages(msgs => [...msgs, message])
 			endRef.current.scrollIntoView()
 		})
@@ -38,7 +38,6 @@ const RoomChat = (props) => {
 
 	function sendMessage() {
 		if (!inputMessage) return
-		console.log(inputMessage);
 		socket.emit('send-message', { name: props.name, message: inputMessage })
 		setInputMessage('')
 	}
@@ -46,7 +45,7 @@ const RoomChat = (props) => {
 	return (
 		<>
 			<div className="chat-cont">
-				<Users {...props} />
+				<UsersDropdown {...props} />
 				<div className="message-area">
 					{messages.map((m, i) => {
 						const isLocalUser = m.name === User.name

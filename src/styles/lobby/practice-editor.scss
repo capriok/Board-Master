@@ -1,0 +1,9 @@
+@import "../../index.scss";
+
+.editors-main {
+	.practice-controls {
+		@include flex;
+		justify-content: space-between;
+		margin-bottom: 20px;
+	}
+}

@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import '../styles/socket-join.scss'
+import '../../styles/common/join.scss'
 
 import { Button, Input } from 'godspeed'
 
-const SocketJoin = () => {
+const Join = () => {
 	const [rooms, setRooms] = useState([])
 	const [form, setForm] = useState({
 		name: '',
@@ -62,4 +62,4 @@ const SocketJoin = () => {
 	)
 }
 
-export default SocketJoin
+export default Join
