@@ -11,13 +11,9 @@ import PracticeOptions from './practice-options'
 const randomWords = require('random-words')
 
 const PracticeEditor = (props) => {
-	const { User, practiceEditor, setPracticeEditor } = props
+	const { User, practiceEditor, setPracticeEditor, practiceOptions, setPracticeOptions } = props
 
-	const [options, setOptions] = useState({
-		exactly: 25, maxLength: 5
-	})
-
-	const RANDOM_WORDS = randomWords({ exactly: options.exactly, maxLength: options.maxLength })
+	const RANDOM_WORDS = randomWords({ exactly: practiceOptions.exactly, maxLength: practiceOptions.maxLength })
 
 	const [optionsOpen, toggleOptions] = useState(false)
 
@@ -32,7 +28,7 @@ const PracticeEditor = (props) => {
 
 	useEffect(() => {
 		setWordSet(RANDOM_WORDS)
-	}, [options])
+	}, [practiceOptions])
 
 	function inputChange(e) {
 		if (currentIndex !== wordSet.length) {
@@ -51,18 +47,11 @@ const PracticeEditor = (props) => {
 		incrementIndex()
 	}
 
-	function escKey(e) {
-		console.log(e);
-		if (e) {
-
-		}
-	}
-
 	function checkWord(e) {
-		if (e.key === 'Escape') return setWordSet(randomWords({ exactly: options.exactly, maxLength: options.maxLength }))
 		let key = e.key
 		let isLastWord = currentIndex === wordSet.length - 1
 		let lastWord = wordSet[wordSet.length - 1]
+		if (e.key === 'Escape') return resetEditor()
 		if (wordInput === '') return
 		if (!((key >= 'a' && key <= 'z') || key === ' ')) return
 		if (key === ' ') {
@@ -125,7 +114,7 @@ const PracticeEditor = (props) => {
 			<div className="editors">
 				<div className="editor-cont">
 					{optionsOpen
-						? <PracticeOptions options={options} setOptions={setOptions} />
+						? <PracticeOptions practiceOptions={practiceOptions} setPracticeOptions={setPracticeOptions} />
 						: <>
 							<div className="head">
 								<div className="name">
@@ -151,7 +140,6 @@ const PracticeEditor = (props) => {
 											autoFocus
 											onChange={(e) => inputChange(e)}
 											onKeyDown={(e) => checkWord(e)}
-											onKeyPress={(e) => escKey(e)}
 											value={wordInput} />}
 								</div>
 							</div>

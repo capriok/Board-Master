@@ -12,6 +12,9 @@
 		.control-placeholder {
 			height: 34px;
 		}
+		.practice-button {
+			margin-left: auto;
+		}
 	}
 	.body {
 		align-self: flex-end;
@@ -19,6 +22,7 @@
 		flex-direction: column;
 		justify-content: space-evenly;
 		width: 100%;
+		padding-bottom: 20px;
 		border-radius: 5px;
 		border: 2px solid slategrey;
 		background-color: $room-accent;

@@ -1,10 +1,10 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 /*eslint no-unused-vars: "off"*/
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 
 import '../../styles/lobby/lobby-editors.scss'
 
-import { Input } from 'godspeed'
+import { Button, Input } from 'godspeed'
 
 const randomWords = require('random-words')
 
@@ -13,8 +13,18 @@ const LobbyEditors = (props) => {
 
 	const isHost = User.userId === HostId
 	const isPlayer = lobby.players.some(p => p.userId === User.userId)
-	let localPlayer = lobby.players.find(p => p.userId === User.userId)
-	let foreignPlayer = lobby.players.find(p => p.userId !== User.userId)
+
+	const [playerOne, setPlayerOne] = useState({})
+	const [playerTwo, setPlayerTwo] = useState({})
+	let playerOneRef = useRef(null)
+	let playerTwoRef = useRef(null)
+
+	useEffect(() => {
+		let localPlayer = lobby.players.find(p => p.userId === User.userId)
+		let foreignPlayer = lobby.players.find(p => p.userId !== User.userId)
+		setPlayerOne(isPlayer ? localPlayer : lobby.players[0])
+		setPlayerTwo(isPlayer ? foreignPlayer : lobby.players[1])
+	}, [lobby])
 
 	const [loading, setLoading] = useState(true)
 	const [count, setCount] = useState(null)
@@ -23,6 +33,7 @@ const LobbyEditors = (props) => {
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const [wordClasses, setwordClasses] = useState([])
 	const [correctKeys, setCorrectKeys] = useState(0)
+
 
 	useEffect(() => {
 		if (!lobby.inSession) {
@@ -59,13 +70,13 @@ const LobbyEditors = (props) => {
 
 	function incrementIndex() {
 		setCurrentIndex(currentIndex + 1)
-		socket.emit('player-current-index', { player: User, currentIndex: currentIndex + 1 })
+		socket.emit('player-current-index', { currentIndex: currentIndex + 1 })
 		setWordInput('')
 	}
 
 	function setCurrentClass(evaluation) {
 		setwordClasses([...wordClasses, evaluation])
-		socket.emit('player-word-classes', { player: User, wordClasses: [...wordClasses, evaluation] })
+		socket.emit('player-word-classes', { wordClasses: [...wordClasses, evaluation] })
 		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length)
 		incrementIndex()
 	}
@@ -93,8 +104,8 @@ const LobbyEditors = (props) => {
 		let words = correctKeys / 5
 		let minute = (Date.now() - lobby.startTime) / 1000 / 60
 		wordSet.forEach(w => totalChars += w.length)
-		socket.emit('player-acc', { player: User, acc: Math.floor((correctKeys / totalChars) * 100) })
-		socket.emit('player-wpm', { player: User, wpm: Math.floor(words / minute) })
+		socket.emit('player-acc', { acc: Math.floor((correctKeys / totalChars) * 100) })
+		socket.emit('player-wpm', { wpm: Math.floor(words / minute) })
 	}
 
 	useEffect(() => {
@@ -102,95 +113,105 @@ const LobbyEditors = (props) => {
 	}, [currentIndex])
 
 	function p1WordClass(i) {
-		if (isPlayer) {
-			return i === localPlayer.currentIndex
-				? 'current'
-				: localPlayer.wordClasses[i]
-		} else {
-			return i === lobby.players[0].currentIndex
-				? 'current'
-				: lobby.players[0].wordClasses[i]
-		}
+		return i === playerOne.currentIndex
+			? 'current'
+			: playerOne.wordClasses[i]
 	}
 
 	function p2WordClass(i) {
-		if (isPlayer) {
-			return i === foreignPlayer.currentIndex
-				? 'current'
-				: foreignPlayer.wordClasses[i]
-		} else {
-			return i === lobby.players[1].currentIndex
-				? 'current'
-				: lobby.players[1].wordClasses[i]
-		}
+		return i === playerTwo.currentIndex
+			? 'current'
+			: playerTwo.wordClasses[i]
 	}
 
 	return (
 		<div className="editors-main">
 			<div className="controls">
-				<div className="control-placeholder" />
+				{isPlayer
+					? <Button
+						className="forfeit-button"
+						text="Forfeit"
+						onClick={() => socket.emit('player-forfeit')}
+						disabled={!lobby.inSession || playerOne.forfeited} />
+					: <div className="controls-placeholder" />
+				}
 			</div>
 			<div className="editors">
 				{/* LOCAL CLIENT */}
-				<div className="editor-cont">
-					<div className="head">
-						<div className="name">
-							<p>{isPlayer ? localPlayer.name : lobby.players[0].name}</p>
-						</div>
-						<div className="stats-cont">
-							<span>
-								Accuracy: {isPlayer ? localPlayer.accuracy : lobby.players[0].accuracy} |
-								WPM: {isPlayer ? localPlayer.wpm : lobby.players[0].wpm}</span>
-						</div>
-					</div>
-					<div className="body">
-						<div className="text-area">
-							{loading
-								? <div className="on-load">
-									<div className="time">{count}</div>
-									<div className="spinner" />
+				<div className="editor-cont"
+					ref={playerOneRef}
+					style={playerOne.forfeited ? { minHeight: playerOneRef.current.clientHeight + 4 } : {}}>
+					{playerOne.forfeited
+						? <p className="player-forfeited"><span>{isPlayer ? 'You' : playerOne.name}</span> forfeited</p>
+						: <>
+							<div className="head">
+								<div className="name">
+									<p>{playerOne.name}</p>
 								</div>
-								: wordSet.map((w, i) => (
-									<span className={p1WordClass(i)} key={i}>{w} </span>
-								))
-							}
-						</div>
-						{(loading || wordSet.length > 0) && isPlayer &&
-							<div className="input-area">
-								<Input
-									onChange={(e) => inputChange(e)}
-									onKeyDown={(e) => checkWord(e)}
-									value={wordInput} />
+								<div className="stats-cont">
+									<span>
+										Accuracy: {playerOne.accuracy} |
+								WPM: {playerOne.wpm}</span>
+								</div>
 							</div>
-						}
-					</div>
+							<div className="body">
+								<div className="text-area">
+									{loading
+										? <div className="on-load">
+											<div className="time">{count}</div>
+											<div className="spinner" />
+										</div>
+										: wordSet.map((w, i) => (
+											<span className={p1WordClass(i)} key={i}>{w} </span>
+										))
+									}
+								</div>
+								{(loading || wordSet.length > 0) && isPlayer &&
+									<div className="input-area">
+										<Input
+											autoFocus
+											onChange={(e) => inputChange(e)}
+											onKeyDown={(e) => checkWord(e)}
+											value={wordInput} />
+									</div>
+								}
+							</div>
+						</>
+					}
 				</div>
 				<br />
 				{/* FOREIGN CLIENT */}
-				<div className="editor-cont">
-					<div className="head">
-						<div className="name">
-							<p>{isPlayer ? foreignPlayer.name : lobby.players[1].name}</p>
-						</div>
-						<div className="stats-cont">
-							<span>
-								Accuracy: {isPlayer ? foreignPlayer.accuracy : lobby.players[1].accuracy} |
-								WPM: {isPlayer ? foreignPlayer.wpm : lobby.players[1].wpm}</span>
-						</div>
-					</div>
-					<div className="body">
-						<div className="text-area">
-							{loading
-								? <div className="on-load">
-									<div className="time">{count}</div>
-									<div className="spinner" />
+				<div className="editor-cont"
+					ref={playerTwoRef}
+					style={playerTwo.forfeited ? { minHeight: playerTwoRef.current.clientHeight + 4 } : {}}>
+					{playerTwo.forfeited
+						? <p className="player-forfeited"><span>{playerTwo.name}</span> forfeited</p>
+						: <>
+							<div className="head">
+								<div className="name">
+									<p>{playerTwo.name}</p>
 								</div>
-								: wordSet.map((w, i) => (
-									<span className={p2WordClass(i)} key={i}>{w} </span>
-								))
-							}
-						</div>
-					</div>
+								<div className="stats-cont">
+									<span>
+										Accuracy: {playerTwo.accuracy} |
+								WPM: {playerTwo.wpm}</span>
+								</div>
+							</div>
+							<div className="body">
+								<div className="text-area">
+									{loading
+										? <div className="on-load">
+											<div className="time">{count}</div>
+											<div className="spinner" />
+										</div>
+										: wordSet.map((w, i) => (
+											<span className={p2WordClass(i)} key={i}>{w} </span>
+										))
+									}
+								</div>
+							</div>
+						</>
+					}
 				</div>
 			</div>
 		</div>

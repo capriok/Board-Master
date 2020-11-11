@@ -1,13 +1,18 @@
 @import "../../index.scss";
 
 .chat {
+	@include flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-end;
+	height: 100%;
 	.chat-cont {
+		flex: 1;
 		position: relative;
 		overflow-x: scroll;
 		min-width: 400px;
 		max-width: 400px;
 		min-height: 600px;
-		max-height: 600px;
 		@include flex;
 		flex-direction: column;
 		justify-content: flex-start;

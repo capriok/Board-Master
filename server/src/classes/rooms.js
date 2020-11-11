@@ -45,6 +45,12 @@ class RoomClass {
 		this.users = []
 		this.lobby = new LobbyClass()
 	}
+	getLobby() {
+		return this.lobby
+	}
+	resetLobby() {
+		this.lobby = new LobbyClass()
+	}
 }
 
 class UserClass {
@@ -90,8 +96,8 @@ class LobbyClass {
 	setWordSet(wordSet) {
 		this.wordSet = wordSet
 	}
-	setPlayersReady() {
-		this.playersReady = !this.playersReady
+	setPlayersReady(bool) {
+		this.playersReady = bool
 	}
 	setInSession() {
 		this.inSession = !this.inSession
@@ -103,9 +109,6 @@ class LobbyClass {
 		this.players = remove(this.players, p => p.userId !== player.userId)
 		this.playerCount = this.players.length
 	}
-	readyPlayer(player) {
-		this.players.find(p => p.userId === player.userId).setReady()
-	}
 }
 
 class PlayerClass {
@@ -113,13 +116,14 @@ class PlayerClass {
 		this.userId = userId
 		this.name = name
 		this.ready = false
+		this.forfeited = false
 		this.wordClasses = []
 		this.currentIndex = 0
 		this.accuracy = 0
 		this.wpm = 0
 	}
-	setReady() {
-		this.ready = !this.ready
+	setReady(bool) {
+		this.ready = bool
 	}
 	setCurrentIndex(currentIndex) {
 		this.currentIndex = currentIndex
@@ -132,6 +136,9 @@ class PlayerClass {
 	}
 	setWpm(val) {
 		this.wpm = val
+	}
+	forfeit() {
+		this.forfeited = true
 	}
 }
 

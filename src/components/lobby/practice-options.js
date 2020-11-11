@@ -1,15 +1,15 @@
 /*eslint no-self-assign: "off"*/
-import React, { useState } from 'react'
+import React from 'react'
 
 import '../../styles/lobby/lobby-options.scss'
 
 import { Input } from 'godspeed'
 
-const PracticeOptions = ({ options, setOptions }) => {
+const PracticeOptions = ({ practiceOptions, setPracticeOptions }) => {
 
 	function inputChange(prop, val, min, max) {
 		val === '' || val < min ? val = min : val > max ? val = max : val = val
-		setOptions({ ...options, [prop]: parseInt(val) })
+		setPracticeOptions({ ...practiceOptions, [prop]: parseInt(val) })
 	}
 
 	return (
@@ -22,10 +22,10 @@ const PracticeOptions = ({ options, setOptions }) => {
 						className="word-count-input"
 						type="number"
 						min={10}
-						max={200}
+						max={100}
 						step={5}
-						value={options.exactly}
-						onChange={(e) => inputChange('exactly', e.target.value, 10, 200)} />
+						value={practiceOptions.exactly}
+						onChange={(e) => inputChange('exactly', e.target.value, 10, 100)} />
 				</label>
 				<label>
 					<p>Max word length</p>
@@ -34,7 +34,7 @@ const PracticeOptions = ({ options, setOptions }) => {
 						type="number"
 						min={3}
 						max={10}
-						value={options.maxLength}
+						value={practiceOptions.maxLength}
 						onChange={(e) => inputChange('maxLength', e.target.value, 3, 10)} />
 				</label>
 			</div>

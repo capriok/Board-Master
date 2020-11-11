@@ -9,7 +9,7 @@
 	border-radius: 10px;
 	box-shadow: 3px 3px 15px -5px black;
 	.leave-room {
-		position: absolute;
+		position: fixed;
 		left: 10px;
 		bottom: 10px;
 	}
@@ -22,7 +22,7 @@
 	}
 	main {
 		@include flex;
-		align-items: flex-end;
+		align-items: flex-start;
 		width: 100%;
 		.session {
 			@include flex;

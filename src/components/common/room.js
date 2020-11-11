@@ -27,6 +27,10 @@ const Room = ({ params }) => {
 	const [users, setUsers] = useState([])
 	const [usersDropdown, setUsersDropdown] = useState(false)
 	const [practiceEditor, setPracticeEditor] = useState(false)
+	const [practiceOptions, setPracticeOptions] = useState({
+		exactly: 25, maxLength: 5
+	})
+
 
 	const history = useHistory()
 
@@ -67,12 +71,13 @@ const Room = ({ params }) => {
 		lobby, setLobby,
 		users, User, HostId,
 		practiceEditor, setPracticeEditor,
+		practiceOptions, setPracticeOptions,
 		usersDropdown
 	}
 
 	return (
 		<div className="room-main">
-			<Button className="leave-room" text="Leave Room" onClick={() => {
+			<Button className="leave-room" text="Leave" onClick={() => {
 				socket.disconnect()
 				history.push('/')
 			}} />

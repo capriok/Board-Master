@@ -10,6 +10,8 @@ const LobbyOptions = (props) => {
 
 	const [options, setOptions] = useState({})
 
+	const informalPlayersReady = lobby.players.length === 2 && lobby.players.every(p => p.ready === true)
+
 	function inputChange(prop, val, min, max) {
 		val === '' || val < min ? val = min : val > max ? val = max : val = val
 		socket.emit('lobby-options', { ...options, [prop]: parseInt(val) })
@@ -29,10 +31,11 @@ const LobbyOptions = (props) => {
 						className="word-count-input"
 						type="number"
 						min={10}
-						max={200}
+						max={100}
 						step={5}
 						value={options.exactly}
-						onChange={(e) => inputChange('exactly', e.target.value, 10, 200)} />
+						onChange={(e) => inputChange('exactly', e.target.value, 10, 100)}
+						disabled={informalPlayersReady} />
 				</label>
 				<label>
 					<p>Max word length</p>
@@ -42,7 +45,8 @@ const LobbyOptions = (props) => {
 						min={3}
 						max={10}
 						value={options.maxLength}
-						onChange={(e) => inputChange('maxLength', e.target.value, 3, 10)} />
+						onChange={(e) => inputChange('maxLength', e.target.value, 3, 10)}
+						disabled={informalPlayersReady} />
 				</label>
 			</div>
 		</div>

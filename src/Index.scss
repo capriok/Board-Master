@@ -51,11 +51,12 @@ h1 {
   font-family: "Raleway", sans-serif;
   font-weight: 400;
   letter-spacing: 0.75px;
+  font-size: 1.8rem;
 }
 
 .App {
   @include flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $app-bg;
 }

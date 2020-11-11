@@ -2,8 +2,10 @@
 
 .editors-main {
 	.controls {
+		@include flex;
+		justify-content: flex-end;
 		margin-bottom: 20px;
-		.control-placeholder {
+		.controls-placeholder {
 			height: 34px;
 		}
 	}
@@ -17,6 +19,11 @@
 			border-radius: 5px;
 			border: 2px solid slategrey;
 			background-color: $room-accent;
+			.player-forfeited {
+				span {
+					text-transform: capitalize;
+				}
+			}
 			.head {
 				@include flex;
 				justify-content: flex-end;

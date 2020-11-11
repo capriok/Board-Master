@@ -30,14 +30,14 @@ function initialize(io) {
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 			io.to(socket.id).emit('local-user', User)
 
-			console.log('USER ADDED - ROOMS USERS: ', Rooms.getUsers(Room.name))
+			console.log(`USER ADDED TO ROOM ${Room.name}: `, Rooms.getUsers(Room.name))
 		})
 
 
 
 		// // RECEIVE MESSAGE FROM CHAT
 		socket.on('send-message', (payload) => {
-			console.log('MESSAGE INCOMING: ', payload.message)
+			console.log('NEW CHAT MESSAGE: ', payload.message)
 			io.to(Room.name).emit("new-message", payload)
 		})
 
@@ -62,14 +62,13 @@ function initialize(io) {
 
 		// // RECEIVE USER READY UP
 		socket.on('set-ready', (payload) => {
-			let currentLobby = Rooms.getLobby(Room.name)
 			console.log('PLAYER IS READY: ', payload.name)
-			Rooms.getLobby(Room.name).readyPlayer(Player)
+			Rooms.getLobby(Room.name).getPlayer(Player).setReady(true)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
-			let lobbyFull = currentLobby.getPlayerCount() === 2
-			let lobbyReady = currentLobby.getPlayers().every(p => p.ready === true)
+			let lobbyFull = Rooms.getLobby(Room.name).getPlayerCount() === 2
+			let lobbyReady = Rooms.getLobby(Room.name).getPlayers().every(p => p.ready === true)
 			if (lobbyFull && lobbyReady) {
-				Rooms.getLobby(Room.name).setPlayersReady()
+				Rooms.getLobby(Room.name).setPlayersReady(true)
 				let delay = setTimeout(() => {
 					io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 					clearTimeout(delay)
@@ -77,9 +76,11 @@ function initialize(io) {
 			}
 		})
 
-		// // RECEIVE LOBBY DEVELOPMENT
+		// // RECEIVE LOBBY OPTIONS
 		socket.on('lobby-options', (payload) => {
 			Rooms.getLobby(Room.name).setOptions(payload)
+			Rooms.getLobby(Room.name).setPlayersReady(false)
+			Rooms.getLobby(Room.name).getPlayers().forEach(p => p.setReady(false))
 			console.log('LOBBY OPTIONS: ', Rooms.getLobby(Room.name).getOptions());
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
@@ -90,7 +91,7 @@ function initialize(io) {
 			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
 			if (isHost) {
 				Rooms.getLobby(Room.name).setWordSet(payload.wordSet)
-				console.log('WORDSET', payload.wordSet)
+				console.log('MATCH WORDSET: ', payload.wordSet)
 				setTimeout(() => io.to(Room.name).emit('lobby-words', payload.wordSet), 1000)
 			} else {
 				io.to(Room.name).emit('lobby-words', payload.wordSet)
@@ -101,11 +102,11 @@ function initialize(io) {
 		socket.on('lobby-start', () => {
 			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
 			isHost && console.log('STARTING COUNTDOWN')
-			let counter = 5
+			let counter = 1
 			let countdown = setInterval(() => {
 				io.to(Room.name).emit('lobby-countdown', counter)
 				if (isHost) {
-					counter > 0 && console.log(counter)
+					counter > 0 && console.log(`${counter}...`)
 					if (counter === 0) {
 						Rooms.getLobby(Room.name).setInSession()
 						io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
@@ -124,34 +125,45 @@ function initialize(io) {
 
 		// // RECEIVE PLAYER CURRENT INDEX
 		socket.on('player-current-index', (payload) => {
-			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
-			player.setCurrentIndex(payload.currentIndex)
+			Player.setCurrentIndex(payload.currentIndex)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
 		// // RECEIVE PLAYER CURRENT INDEX
 		socket.on('player-word-classes', (payload) => {
-			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
-			player.setWordClasses(payload.wordClasses)
+			Player.setWordClasses(payload.wordClasses)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
 		// // RECEIVE PLAYER ACC
 		socket.on('player-acc', (payload) => {
-			console.log('PLAYER ACC', payload.acc)
-			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
-			player.setAccuracy(payload.acc)
+			console.log('PLAYER ACCURACY:', payload.acc)
+			Player.setAccuracy(payload.acc)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
 		// // RECEIVE PLAYER WPM
 		socket.on('player-wpm', (payload) => {
-			console.log('PLAYER WPM', payload.wpm)
-			const player = Rooms.getLobby(Room.name).getPlayer(payload.player)
-			player.setWpm(payload.wpm)
+			console.log('PLAYER WORDS PER MIN:', payload.wpm)
+			Player.setWpm(payload.wpm)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
+		// // RECEIVE PLAYER FORFEIT
+		socket.on('player-forfeit', () => {
+			console.log('PLAYER FORFEITED:', Player.name)
+			Player.forfeit()
+			let lobbyPlayers = Rooms.getLobby(Room.name).getPlayers()
+			let playersForfeited = lobbyPlayers.every(p => p.forfeited === true)
+			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+			if (playersForfeited) {
+				Rooms.getRoom(Room.name).resetLobby()
+				let delay = setTimeout(() => {
+					io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+					clearTimeout(delay)
+				}, 1000);
+			}
+		})
 
 
 		// // RECEIVE SOCKET DISCONNECTION
@@ -167,7 +179,7 @@ function initialize(io) {
 				message: `${leavingSocket.name} has left.`,
 				serverMessage: true
 			})
-			console.log('USER REMOVED - ROOMS USERS', Rooms.getUsers(Room.name))
+			console.log(`USER REMOVED FROM ROOM ${Room.name}`, Rooms.getUsers(Room.name))
 
 			io.to(Room.name).emit('user-list', Rooms.getUsers(Room.name))
 
