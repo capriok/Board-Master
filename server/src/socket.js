@@ -103,7 +103,7 @@ function initialize(io) {
 		socket.on('lobby-start', () => {
 			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
 			isHost && console.log('STARTING COUNTDOWN')
-			let counter = 0
+			let counter = 5
 			let countdown = setInterval(() => {
 				io.to(Room.name).emit('lobby-countdown', counter)
 				if (isHost) {

@@ -64,7 +64,7 @@ class LobbyClass {
 	constructor() {
 		this.players = []
 		this.playerCount = this.players.length
-		this.options = { exactly: 10, maxLength: 5 }
+		this.options = { exactly: 25, maxLength: 5 }
 		this.wordSet = []
 		this.playersReady = false
 		this.inSession = false
