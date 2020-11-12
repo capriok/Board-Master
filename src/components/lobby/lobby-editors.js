@@ -127,10 +127,13 @@ const LobbyEditors = (props) => {
 		if (!lobby.inSession) return
 		let playerOneScore = playerOne.wpm + playerOne.accuracy + (playerOne.accuracy / 100)
 		let playerTwoScore = playerTwo.wpm + playerTwo.accuracy + (playerTwo.accuracy / 100)
-		let playerWinner = playerOneScore > playerTwoScore ? playerOne : playerTwo
-		setWinner(playerWinner)
+		let winningPlayer = playerOneScore > playerTwoScore ? playerOne : playerTwo
+		let winningScore = playerOneScore > playerTwoScore ? playerOneScore : playerTwoScore
+		let losingPlayer = playerOneScore < playerTwoScore ? playerOne : playerTwo
+		setWinner(winningPlayer)
 		playerOneScore === playerTwoScore && setDraw(true)
-		socket.emit('match-finish', { playerWinner })
+		socket.emit('match-finish', { winningPlayer })
+		socket.emit('match-outcome-message', { winningPlayer, losingPlayer, winningScore })
 	}
 
 	function p1WordClass(i) {

@@ -1,8 +1,12 @@
 const router = require('express').Router()
 const { Rooms, RoomClass, UserClass, PlayerClass } = require('./classes/rooms')
-const { remove } = require('lodash')
 
 function initialize(io) {
+
+	String.prototype.capitalize = function () {
+		return this.charAt(0).toUpperCase() + this.slice(1);
+	}
+
 	io.on("connection", (socket) => {
 		let Room
 		let User
@@ -11,7 +15,7 @@ function initialize(io) {
 		// // RECEIVE  SOCKET JOINING
 		socket.on('join', ({ name, room }) => {
 
-			User = new UserClass(socket.id, name)
+			User = new UserClass(socket.id, name.capitalize())
 			Room = new RoomClass(socket.id, room)
 
 			socket.join(Room.name)
@@ -172,14 +176,25 @@ function initialize(io) {
 				}
 				if (counter === 0) {
 					Rooms.getRoom(Room.name).resetLobby()
-					winningPlayer = new PlayerClass(payload.playerWinner.userId, payload.playerWinner.name)
+					winningPlayer = new PlayerClass(payload.winningPlayer.userId, payload.winningPlayer.name)
 					Rooms.getLobby(Room.name).addPlayer(winningPlayer)
 					io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 				}
 				counter--
 				counter < 0 && clearInterval(countdown)
-
 			}, 1000)
+		})
+
+		// // RECEIVE LOBBY START
+		socket.on('match-outcome-message', (payload) => {
+			socket.to(Room.name).emit('new-message', {
+				name: null,
+				message: `
+				${payload.winningPlayer.name} beat 
+				${payload.losingPlayer.name} with a score of
+				${payload.winningScore} `,
+				serverMessage: true
+			})
 		})
 
 
