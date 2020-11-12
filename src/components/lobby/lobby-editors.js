@@ -155,18 +155,6 @@ const LobbyEditors = (props) => {
 		let playerOneScore = calculateScore(playerOne.wpm, playerOne.accuracy)
 		let playerTwoScore = calculateScore(playerTwo.wpm, playerTwo.accuracy)
 
-		// let isDraw = playerOneScore === playerTwoScore
-		// let winningPlayer = playerOneScore > playerTwoScore ? playerOne : playerTwo
-		// let losingPlayer = playerOneScore < playerTwoScore ? playerOne : playerTwo
-		// let winningScore = playerOneScore > playerTwoScore ? playerOneScore : playerTwoScore
-		// let losingScore = playerOneScore < playerTwoScore ? playerOneScore : playerTwoScore
-
-		// let matchResult = {
-		// 	outcome: isDraw ? 'draw' : 'win',
-		// 	winner: { ...winningPlayer, score: winningScore },
-		// 	loser: { ...losingPlayer, score: losingScore }
-		// }
-
 		let matchResult = composeResult(playerOneScore, playerTwoScore)
 
 		socket.emit('match-finish')
