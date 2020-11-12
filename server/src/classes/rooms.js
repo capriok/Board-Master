@@ -64,7 +64,7 @@ class LobbyClass {
 	constructor() {
 		this.players = []
 		this.playerCount = this.players.length
-		this.options = { exactly: 25, maxLength: 5 }
+		this.options = { exactly: 10, maxLength: 5 }
 		this.wordSet = []
 		this.playersReady = false
 		this.inSession = false
@@ -117,6 +117,7 @@ class PlayerClass {
 		this.name = name
 		this.ready = false
 		this.forfeited = false
+		this.finished = false
 		this.wordClasses = []
 		this.currentIndex = 0
 		this.accuracy = 0
@@ -131,14 +132,15 @@ class PlayerClass {
 	setWordClasses(classes) {
 		this.wordClasses = classes
 	}
-	setAccuracy(val) {
-		this.accuracy = val
+	setStats({ wpm, acc }) {
+		this.wpm = wpm
+		this.accuracy = acc
 	}
-	setWpm(val) {
-		this.wpm = val
-	}
-	forfeit() {
+	isForfeited() {
 		this.forfeited = true
+	}
+	isFinished() {
+		this.finished = true
 	}
 }
 

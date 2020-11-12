@@ -17,14 +17,14 @@ const PracticeEditor = (props) => {
 
 	const [optionsOpen, toggleOptions] = useState(false)
 
-	const [acc, setAcc] = useState(0)
-	const [wpm, setWPM] = useState(0)
+	const [startTime, setStartTime] = useState(null)
 	const [wordSet, setWordSet] = useState(RANDOM_WORDS)
 	const [wordInput, setWordInput] = useState('')
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const [wordClasses, setwordClasses] = useState([])
-	const [startTime, setStartTime] = useState(null)
 	const [correctKeys, setCorrectKeys] = useState(0)
+	const [acc, setAcc] = useState(0)
+	const [wpm, setWPM] = useState(0)
 
 	useEffect(() => {
 		setWordSet(RANDOM_WORDS)
@@ -76,11 +76,12 @@ const PracticeEditor = (props) => {
 	}
 
 	function resetEditor() {
-		setWordSet(RANDOM_WORDS)
-		setwordClasses([])
-		setCurrentIndex(0)
-		setCorrectKeys(0)
 		setStartTime(null)
+		setWordSet(RANDOM_WORDS)
+		setWordInput('')
+		setCurrentIndex(0)
+		setwordClasses([])
+		setCorrectKeys(0)
 		setAcc(0)
 		setWPM(0)
 	}
@@ -138,6 +139,7 @@ const PracticeEditor = (props) => {
 										? <Button text="Go Again" onClick={() => resetEditor()} />
 										: <Input
 											autoFocus
+											placeholder={currentIndex === 0 ? 'Scoring starts when you start typing' : ''}
 											onChange={(e) => inputChange(e)}
 											onKeyDown={(e) => checkWord(e)}
 											value={wordInput} />}

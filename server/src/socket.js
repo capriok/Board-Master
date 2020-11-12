@@ -45,6 +45,7 @@ function initialize(io) {
 
 		// // RECEIVE USER JOINING LOBBY
 		socket.on('join-lobby', (payload) => {
+			if (payload.userId === undefined) return
 			Player = new PlayerClass(payload.userId, payload.name)
 			console.log('PLAYER JOINED: ', payload.name)
 			Rooms.getLobby(Room.name).addPlayer(Player)
@@ -102,7 +103,7 @@ function initialize(io) {
 		socket.on('lobby-start', () => {
 			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
 			isHost && console.log('STARTING COUNTDOWN')
-			let counter = 1
+			let counter = 0
 			let countdown = setInterval(() => {
 				io.to(Room.name).emit('lobby-countdown', counter)
 				if (isHost) {
@@ -135,24 +136,18 @@ function initialize(io) {
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
-		// // RECEIVE PLAYER ACC
-		socket.on('player-acc', (payload) => {
-			console.log('PLAYER ACCURACY:', payload.acc)
-			Player.setAccuracy(payload.acc)
-			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
-		})
-
-		// // RECEIVE PLAYER WPM
-		socket.on('player-wpm', (payload) => {
-			console.log('PLAYER WORDS PER MIN:', payload.wpm)
-			Player.setWpm(payload.wpm)
+		// // RECEIVE PLAYER STATS
+		socket.on('player-stats', (payload) => {
+			console.log('PLAYER STATS:', { wpm: payload.wpm, acc: payload.acc })
+			Player.setStats({ wpm: payload.wpm, acc: payload.acc })
+			Player.isFinished()
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 		})
 
 		// // RECEIVE PLAYER FORFEIT
 		socket.on('player-forfeit', () => {
 			console.log('PLAYER FORFEITED:', Player.name)
-			Player.forfeit()
+			Player.isForfeited()
 			let lobbyPlayers = Rooms.getLobby(Room.name).getPlayers()
 			let playersForfeited = lobbyPlayers.every(p => p.forfeited === true)
 			io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
@@ -164,6 +159,29 @@ function initialize(io) {
 				}, 1000);
 			}
 		})
+
+		// // RECEIVE LOBBY START
+		socket.on('match-finish', (payload) => {
+			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
+			isHost && console.log('LOBBY RESETTING')
+			let counter = 10
+			let countdown = setInterval(() => {
+				io.to(Room.name).emit('lobby-reset', counter)
+				if (isHost) {
+					counter > 0 && console.log(`${counter}...`)
+				}
+				if (counter === 0) {
+					Rooms.getRoom(Room.name).resetLobby()
+					winningPlayer = new PlayerClass(payload.playerWinner.userId, payload.playerWinner.name)
+					Rooms.getLobby(Room.name).addPlayer(winningPlayer)
+					io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
+				}
+				counter--
+				counter < 0 && clearInterval(countdown)
+
+			}, 1000)
+		})
+
 
 
 		// // RECEIVE SOCKET DISCONNECTION

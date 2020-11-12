@@ -8,6 +8,10 @@
 		.controls-placeholder {
 			height: 34px;
 		}
+		.status {
+			flex: 1;
+			margin: 0;
+		}
 	}
 	.editors {
 		.editor-cont {
@@ -28,17 +32,17 @@
 				@include flex;
 				justify-content: flex-end;
 				width: 100%;
+				* {
+					font-size: 1.2rem;
+					margin: 0;
+				}
 				.name {
 					flex: 1;
 					text-transform: capitalize;
-					p {
-						margin: 0;
-						font-size: 1.2rem;
-					}
 				}
-			}
-			.stats-cont {
-				display: flex;
+				.winner {
+					animation: win 2s infinite;
+				}
 			}
 			.body {
 				width: 100%;
@@ -70,6 +74,23 @@
 					}
 					button {
 						min-width: 75px;
+					}
+				}
+				.stats-cont {
+					@include flex;
+					flex-direction: column;
+					justify-content: flex-start;
+					width: 100%;
+					.stats {
+						@include flex;
+						flex-direction: column;
+						margin: 0 !important;
+						p {
+							margin: 0;
+							&:first-child {
+								margin-bottom: 5px;
+							}
+						}
 					}
 				}
 			}
@@ -142,5 +163,26 @@ $darkblue: rgb(17, 49, 80);
 	}
 	100% {
 		border-top-color: $lightgrey;
+	}
+}
+
+@keyframes win {
+	0% {
+		color: rgb(49, 0, 0);
+	}
+	20% {
+		color: rgb(75, 0, 65);
+	}
+	40% {
+		color: rgb(47, 0, 155);
+	}
+	60% {
+		color: rgb(11, 119, 138);
+	}
+	80% {
+		color: rgb(36, 128, 0);
+	}
+	100% {
+		color: rgb(59, 58, 0);
 	}
 }

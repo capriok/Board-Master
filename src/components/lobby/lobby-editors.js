@@ -11,13 +11,26 @@ const randomWords = require('random-words')
 const LobbyEditors = (props) => {
 	const { socket, lobby, User, HostId } = props
 
-	const isHost = User.userId === HostId
-	const isPlayer = lobby.players.some(p => p.userId === User.userId)
+	const [loading, setLoading] = useState(true)
+	const [count, setCount] = useState(null)
+	const [resetCount, setResetCount] = useState(null)
+	const [wordSet, setWordSet] = useState([])
+	const [wordInput, setWordInput] = useState('')
+	const [currentIndex, setCurrentIndex] = useState(0)
+	const [wordClasses, setwordClasses] = useState([])
+	const [correctKeys, setCorrectKeys] = useState(0)
 
 	const [playerOne, setPlayerOne] = useState({})
 	const [playerTwo, setPlayerTwo] = useState({})
 	let playerOneRef = useRef(null)
 	let playerTwoRef = useRef(null)
+
+	const [winner, setWinner] = useState({})
+	const [draw, setDraw] = useState(false)
+
+	const isHost = User.userId === HostId
+	const isPlayer = lobby.players.some(p => p.userId === User.userId)
+	const matchFinished = playerOne.finished && playerTwo.finished
 
 	useEffect(() => {
 		let localPlayer = lobby.players.find(p => p.userId === User.userId)
@@ -26,14 +39,9 @@ const LobbyEditors = (props) => {
 		setPlayerTwo(isPlayer ? foreignPlayer : lobby.players[1])
 	}, [lobby])
 
-	const [loading, setLoading] = useState(true)
-	const [count, setCount] = useState(null)
-	const [wordSet, setWordSet] = useState([])
-	const [wordInput, setWordInput] = useState('')
-	const [currentIndex, setCurrentIndex] = useState(0)
-	const [wordClasses, setwordClasses] = useState([])
-	const [correctKeys, setCorrectKeys] = useState(0)
-
+	useEffect(() => {
+		matchFinished && determineWinner()
+	}, [matchFinished])
 
 	useEffect(() => {
 		if (!lobby.inSession) {
@@ -42,6 +50,7 @@ const LobbyEditors = (props) => {
 			socket.emit('lobby-development', { wordSet })
 			socket.on('lobby-words', (wordSet) => setWordSet(wordSet))
 			socket.on('lobby-countdown', (count) => setCount(count))
+			socket.on('lobby-reset', (count) => setResetCount(count))
 		} else {
 			setLoading(false)
 			setWordSet(lobby.wordSet)
@@ -61,6 +70,10 @@ const LobbyEditors = (props) => {
 			socket.emit('lobby-start-time')
 		}
 	}, [count])
+
+	useEffect(() => {
+		if (wordSet.length > 0) currentIndex === wordSet.length && calculate()
+	}, [currentIndex])
 
 	function inputChange(e) {
 		if (currentIndex !== wordSet.length) {
@@ -104,13 +117,21 @@ const LobbyEditors = (props) => {
 		let words = correctKeys / 5
 		let minute = (Date.now() - lobby.startTime) / 1000 / 60
 		wordSet.forEach(w => totalChars += w.length)
-		socket.emit('player-acc', { acc: Math.floor((correctKeys / totalChars) * 100) })
-		socket.emit('player-wpm', { wpm: Math.floor(words / minute) })
+		socket.emit('player-stats', {
+			wpm: Math.floor(words / minute),
+			acc: Math.floor((correctKeys / totalChars) * 100)
+		})
 	}
 
-	useEffect(() => {
-		if (wordSet.length > 0) currentIndex === wordSet.length && calculate()
-	}, [currentIndex])
+	function determineWinner() {
+		if (!lobby.inSession) return
+		let playerOneScore = playerOne.wpm + playerOne.accuracy + (playerOne.accuracy / 100)
+		let playerTwoScore = playerTwo.wpm + playerTwo.accuracy + (playerTwo.accuracy / 100)
+		let playerWinner = playerOneScore > playerTwoScore ? playerOne : playerTwo
+		setWinner(playerWinner)
+		playerOneScore === playerTwoScore && setDraw(true)
+		socket.emit('match-finish', { playerWinner })
+	}
 
 	function p1WordClass(i) {
 		return i === playerOne.currentIndex
@@ -127,6 +148,7 @@ const LobbyEditors = (props) => {
 	return (
 		<div className="editors-main">
 			<div className="controls">
+				{(matchFinished && resetCount !== null) && <p className="status">Reset in {resetCount}</p>}
 				{isPlayer
 					? <Button
 						className="forfeit-button"
@@ -148,10 +170,10 @@ const LobbyEditors = (props) => {
 								<div className="name">
 									<p>{playerOne.name}</p>
 								</div>
-								<div className="stats-cont">
-									<span>
-										Accuracy: {playerOne.accuracy} |
-								WPM: {playerOne.wpm}</span>
+								<div className="winner">
+									{draw
+										? <p>Draw!</p>
+										: matchFinished && winner.name === playerOne.name && <p>Winner!</p>}
 								</div>
 							</div>
 							<div className="body">
@@ -166,13 +188,20 @@ const LobbyEditors = (props) => {
 										))
 									}
 								</div>
-								{(loading || wordSet.length > 0) && isPlayer &&
-									<div className="input-area">
+								{lobby.playersReady && playerOne.currentIndex !== wordSet.length
+									? isPlayer && <div className="input-area">
 										<Input
 											autoFocus
-											onChange={(e) => inputChange(e)}
+											onChange={(e) => lobby.inSession && inputChange(e)}
 											onKeyDown={(e) => checkWord(e)}
 											value={wordInput} />
+									</div>
+									: lobby.inSession &&
+									<div className="stats-cont">
+										<div className="stats">
+											<p><span>{playerOne.wpm}</span> Words / Minute</p>
+											<p><span>{playerOne.accuracy}%</span> Accuracy</p>
+										</div>
 									</div>
 								}
 							</div>
@@ -191,10 +220,10 @@ const LobbyEditors = (props) => {
 								<div className="name">
 									<p>{playerTwo.name}</p>
 								</div>
-								<div className="stats-cont">
-									<span>
-										Accuracy: {playerTwo.accuracy} |
-								WPM: {playerTwo.wpm}</span>
+								<div className="winner">
+									{draw
+										? <p>Draw!</p>
+										: matchFinished && winner.name === playerTwo.name && <p>Winner!</p>}
 								</div>
 							</div>
 							<div className="body">
@@ -209,12 +238,21 @@ const LobbyEditors = (props) => {
 										))
 									}
 								</div>
+								{playerOne.currentIndex === wordSet.length &&
+									(wordSet.length > 0 && playerTwo.currentIndex === wordSet.length) &&
+									<div className="stats-cont">
+										<div className="stats">
+											<p><span>{playerTwo.wpm}</span> Words/ Minute</p>
+											<p><span>{playerTwo.accuracy}%</span> Accuracy</p>
+										</div>
+									</div>
+								}
 							</div>
 						</>
 					}
 				</div>
 			</div>
-		</div>
+		</div >
 	);
 }
 
