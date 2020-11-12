@@ -125,15 +125,54 @@ const LobbyEditors = (props) => {
 
 	function determineWinner() {
 		if (!lobby.inSession) return
-		let playerOneScore = playerOne.wpm + playerOne.accuracy + (playerOne.accuracy / 100)
-		let playerTwoScore = playerTwo.wpm + playerTwo.accuracy + (playerTwo.accuracy / 100)
-		let winningPlayer = playerOneScore > playerTwoScore ? playerOne : playerTwo
-		let winningScore = playerOneScore > playerTwoScore ? playerOneScore : playerTwoScore
-		let losingPlayer = playerOneScore < playerTwoScore ? playerOne : playerTwo
-		setWinner(winningPlayer)
-		playerOneScore === playerTwoScore && setDraw(true)
-		socket.emit('match-finish', { winningPlayer })
-		socket.emit('match-outcome-message', { winningPlayer, losingPlayer, winningScore })
+
+		function calculateScore(wpm, acc) {
+			let score = (wpm / wordSet.length) + (acc / 100) * acc
+			return score.toFixed(2)
+		}
+
+		function composeResult(p1s, p2s) {
+			let isDraw = p1s === p2s
+			if (isDraw) {
+				return {
+					outcome: 'draw',
+					winner: {},
+					loser: {},
+				}
+			} else {
+				return {
+					outcome: 'win',
+					winner: playerOneScore > playerTwoScore
+						? { ...playerOne, score: playerOneScore }
+						: { ...playerTwo, score: playerTwoScore },
+					loser: playerOneScore < playerTwoScore
+						? { ...playerOne, score: playerOneScore }
+						: { ...playerTwo, score: playerTwoScore },
+				}
+			}
+		}
+
+		let playerOneScore = calculateScore(playerOne.wpm, playerOne.accuracy)
+		let playerTwoScore = calculateScore(playerTwo.wpm, playerTwo.accuracy)
+
+		// let isDraw = playerOneScore === playerTwoScore
+		// let winningPlayer = playerOneScore > playerTwoScore ? playerOne : playerTwo
+		// let losingPlayer = playerOneScore < playerTwoScore ? playerOne : playerTwo
+		// let winningScore = playerOneScore > playerTwoScore ? playerOneScore : playerTwoScore
+		// let losingScore = playerOneScore < playerTwoScore ? playerOneScore : playerTwoScore
+
+		// let matchResult = {
+		// 	outcome: isDraw ? 'draw' : 'win',
+		// 	winner: { ...winningPlayer, score: winningScore },
+		// 	loser: { ...losingPlayer, score: losingScore }
+		// }
+
+		let matchResult = composeResult(playerOneScore, playerTwoScore)
+
+		socket.emit('match-finish')
+		socket.emit('match-outcome-message', matchResult)
+		if (matchResult.outcome === 'draw') return setDraw(true)
+		setWinner(matchResult.winner)
 	}
 
 	function p1WordClass(i) {
@@ -157,7 +196,7 @@ const LobbyEditors = (props) => {
 						className="forfeit-button"
 						text="Forfeit"
 						onClick={() => socket.emit('player-forfeit')}
-						disabled={!lobby.inSession || playerOne.forfeited} />
+						disabled={!lobby.inSession || playerOne.forfeited || matchFinished} />
 					: <div className="controls-placeholder" />
 				}
 			</div>

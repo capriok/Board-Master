@@ -76,17 +76,3 @@ const Lobby = (props) => {
 }
 
 export default Lobby
-
-
-
-	// const [wordCount, setWordCount] = useState(50);
-
-
-	// function setWordSet() {
-	// 	socket.emit('randomize-word_set', { wordCount })
-	// }
-
-	// useEffect(() => {
-	// 	setWordSet();
-	// }, [wordCount]);
-

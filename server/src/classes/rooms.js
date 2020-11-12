@@ -35,7 +35,6 @@ class RoomsClass {
 	transferHost({ room, userId }) {
 		this.getRoom(room).roomId = userId
 	}
-
 }
 
 class RoomClass {
@@ -64,7 +63,7 @@ class LobbyClass {
 	constructor() {
 		this.players = []
 		this.playerCount = this.players.length
-		this.options = { exactly: 25, maxLength: 5 }
+		this.options = { exactly: 15, maxLength: 5 }
 		this.wordSet = []
 		this.playersReady = false
 		this.inSession = false

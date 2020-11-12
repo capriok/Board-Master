@@ -165,7 +165,7 @@ function initialize(io) {
 		})
 
 		// // RECEIVE LOBBY START
-		socket.on('match-finish', (payload) => {
+		socket.on('match-finish', () => {
 			const isHost = Rooms.getRoom(Room.name).roomId === socket.id
 			isHost && console.log('LOBBY RESETTING')
 			let counter = 10
@@ -176,8 +176,6 @@ function initialize(io) {
 				}
 				if (counter === 0) {
 					Rooms.getRoom(Room.name).resetLobby()
-					winningPlayer = new PlayerClass(payload.winningPlayer.userId, payload.winningPlayer.name)
-					Rooms.getLobby(Room.name).addPlayer(winningPlayer)
 					io.to(Room.name).emit('room-lobby', Rooms.getLobby(Room.name))
 				}
 				counter--
@@ -189,10 +187,9 @@ function initialize(io) {
 		socket.on('match-outcome-message', (payload) => {
 			socket.to(Room.name).emit('new-message', {
 				name: null,
-				message: `
-				${payload.winningPlayer.name} beat 
-				${payload.losingPlayer.name} with a score of
-				${payload.winningScore} `,
+				message: payload.outcome === 'draw'
+					? `The match was a draw.`
+					: `${payload.winner.name} beat ${payload.loser.name} with a score of ${payload.winner.score}.`,
 				serverMessage: true
 			})
 		})
