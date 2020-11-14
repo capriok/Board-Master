@@ -34,7 +34,7 @@ const Room = ({ params }) => {
 
 	const history = useHistory()
 
-	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT))
+	const socketRef = useRef(io(process.env.REACT_APP_ENDPOINT, { path: '/socket' }))
 	let socket = socketRef.current
 
 	useEffect(() => {
