@@ -90,7 +90,7 @@ const LobbyEditors = (props) => {
 	function setCurrentClass(evaluation) {
 		setwordClasses([...wordClasses, evaluation])
 		socket.emit('player-word-classes', { wordClasses: [...wordClasses, evaluation] })
-		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length)
+		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length + 1)
 		incrementIndex()
 	}
 
@@ -114,11 +114,13 @@ const LobbyEditors = (props) => {
 
 	function calculate() {
 		let totalChars = 0
-		let words = correctKeys / 5
+		let errors = 0
+		let words = (correctKeys / 5)
 		let minute = (Date.now() - lobby.startTime) / 1000 / 60
-		wordSet.forEach(w => totalChars += w.length)
+		wordClasses.forEach(c => c === 'incorrect' && errors + 5)
+		wordSet.forEach(w => totalChars += w.length + 1)
 		socket.emit('player-stats', {
-			wpm: Math.floor(words / minute),
+			wpm: Math.floor((words - errors) / minute),
 			acc: Math.floor((correctKeys / totalChars) * 100)
 		})
 	}

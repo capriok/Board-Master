@@ -28,7 +28,7 @@ const Room = ({ params }) => {
 	const [usersDropdown, setUsersDropdown] = useState(false)
 	const [practiceEditor, setPracticeEditor] = useState(false)
 	const [practiceOptions, setPracticeOptions] = useState({
-		exactly: 25, maxLength: 5
+		exactly: 10, maxLength: 5
 	})
 
 

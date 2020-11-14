@@ -23,8 +23,8 @@ const PracticeEditor = (props) => {
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const [wordClasses, setwordClasses] = useState([])
 	const [correctKeys, setCorrectKeys] = useState(0)
-	const [acc, setAcc] = useState(0)
 	const [wpm, setWPM] = useState(0)
+	const [acc, setAcc] = useState(0)
 
 	useEffect(() => {
 		setWordSet(RANDOM_WORDS)
@@ -43,7 +43,7 @@ const PracticeEditor = (props) => {
 
 	function setCurrentClass(evaluation) {
 		setwordClasses([...wordClasses, evaluation])
-		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length)
+		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length + 1)
 		incrementIndex()
 	}
 
@@ -68,11 +68,13 @@ const PracticeEditor = (props) => {
 
 	function calculate() {
 		let totalChars = 0
-		let wordsTyped = correctKeys / 5
-		let timeTaken = (Date.now() - startTime) / 1000 / 60
-		wordSet.forEach(w => totalChars += w.length)
+		let errors = 0
+		let words = (correctKeys / 5)
+		let minute = (Date.now() - startTime) / 1000 / 60
+		wordClasses.forEach(c => c === 'incorrect' && errors + 5)
+		wordSet.forEach(w => totalChars += w.length + 1)
+		setWPM(Math.floor((words - errors) / minute))
 		setAcc(Math.floor((correctKeys / totalChars) * 100))
-		setWPM(Math.floor(wordsTyped / timeTaken))
 	}
 
 	function resetEditor() {
@@ -121,11 +123,6 @@ const PracticeEditor = (props) => {
 								<div className="name">
 									<p>{User.name}</p>
 								</div>
-								<div className="stats-cont">
-									<span>
-										Accuracy: {acc} | WPM: {wpm}
-									</span>
-								</div>
 							</div>
 							<div className="body">
 								<div className="text-area">
@@ -144,6 +141,14 @@ const PracticeEditor = (props) => {
 											onKeyDown={(e) => checkWord(e)}
 											value={wordInput} />}
 								</div>
+								<br />
+								{wordSet.length === currentIndex &&
+									<div className="stats-cont">
+										<div className="stats">
+											<p><span>{wpm}</span> Words/ Minute</p>
+											<p><span>{acc}%</span> Accuracy</p>
+										</div>
+									</div>}
 							</div>
 						</>
 					}
