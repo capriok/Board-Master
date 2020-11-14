@@ -3,15 +3,15 @@
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import Join from './components/common/join'
+import Home from './components/common/home'
 import Room from './components/common/room'
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="app">
       <Router>
         <Route exact path='/' render={() => (
-          <Join />
+          <Home />
         )} />
         <Route path='/room/name=:name&room=:room' render={(props) => (
           <Room params={props.match.params} />

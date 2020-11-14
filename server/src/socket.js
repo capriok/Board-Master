@@ -16,7 +16,8 @@ function initialize(io) {
 		socket.on('join', ({ name, room }) => {
 
 			User = new UserClass(socket.id, name.capitalize())
-			Room = new RoomClass(socket.id, room)
+			Room = new RoomClass(socket.id, room.capitalize())
+
 
 			socket.join(Room.name)
 

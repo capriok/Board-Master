@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Alegreya+Sans+SC:300,400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap");
 
 ::-webkit-scrollbar {
@@ -29,7 +29,8 @@
   align-items: center;
 }
 
-$app-bg: rgb(100, 100, 100);
+$app-bg: rgb(210, 210, 210);
+$blue-accent: rgb(14, 17, 26);
 $room-bg: rgb(200, 200, 200);
 $room-accent: rgb(190, 190, 190);
 
@@ -48,13 +49,12 @@ html {
 }
 
 h1 {
-  font-family: "Raleway", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 400;
-  letter-spacing: 0.75px;
   font-size: 1.8rem;
 }
 
-.App {
+.app {
   @include flex;
   flex-direction: column;
   min-height: 100vh;
