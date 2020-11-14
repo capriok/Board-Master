@@ -8,3 +8,7 @@ function Index() {
 }
 
 ReactDOM.render(<Index />, document.getElementById('root'))
+
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}

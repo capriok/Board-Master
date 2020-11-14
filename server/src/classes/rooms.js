@@ -3,7 +3,11 @@ const { wordList } = require('random-words')
 
 class RoomsClass {
 	constructor() {
-		this.rooms = []
+		this.rooms = [
+			new RoomClass('', 'Beginner'),
+			new RoomClass('', 'Intermediate'),
+			new RoomClass('', 'Advanced')
+		]
 	}
 
 	getRoom(room) {
@@ -23,6 +27,8 @@ class RoomsClass {
 		if (!this.getRoom(room.name)) this.rooms.push(room)
 	}
 	addUser({ room, user }) {
+		const emptyRoom = this.getRoom(room).roomId === ''
+		if (emptyRoom) this.getRoom(room).roomId = user.userId
 		this.getRoom(room).users = uniqBy([...this.getRoom(room).users, user], 'userId')
 	}
 
@@ -30,6 +36,9 @@ class RoomsClass {
 		this.getRoom(room).users = remove(this.getUsers(room), u => u.userId !== user.userId)
 	}
 	removeRoom(room) {
+		if (room === 'Beginner' || room === 'Intermediate' || room === 'Advanced') {
+			return this.getRoom(room).roomId = ''
+		}
 		this.rooms = remove(this.rooms, r => r.name !== room)
 	}
 	transferHost({ room, userId }) {
