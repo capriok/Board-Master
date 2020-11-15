@@ -15,13 +15,22 @@ const Home = () => {
 	const [rooms, setRooms] = useState([])
 	const [form, setForm] = useState({
 		name: '',
-		room: ''
+		nameErr: false,
+		room: '',
+		roomErr: false,
+
 	})
 	const history = useHistory()
 
 	function joinRoom(e) {
 		e.preventDefault()
-		if (!form.name || !form.room) return
+		if (!form.name || !form.room) {
+			return setForm({
+				...form,
+				nameErr: !form.name ? true : false,
+				roomErr: !form.room ? true : false
+			})
+		}
 		history.push(`/room/name=${form.name}&room=${form.room.capitalize()}`)
 	}
 
@@ -29,11 +38,9 @@ const Home = () => {
 		(async () => {
 			let res = await fetch(process.env.REACT_APP_ENDPOINT + '/io/get-rooms')
 			let data = await res.json()
-			console.log(data);
 			setRooms(data)
 		})()
 	}, [])
-
 
 	return (
 		<>
@@ -45,7 +52,6 @@ const Home = () => {
 				</nav>
 				<main>
 					<div className="info">
-						<h1 className="info-title">Are you a Board Master?</h1>
 						<div className="card-cont">
 							<div className="card">
 								<img src={speed} alt="" />
@@ -65,21 +71,24 @@ const Home = () => {
 						<div className="join-cont">
 							<h1 className="join-title">Join a room</h1>
 							<form id="join-form" className="inputs" onSubmit={e => joinRoom(e)}>
-								<span>Name:</span>
+								<p>Name:</p>
 								<Input
 									value={form.name}
-									onChange={e => setForm({ ...form, name: e.target.value })} />
-								<span>Room:</span>
+									style={form.nameErr ? { borderColor: 'red' } : {}}
+									onChange={e => setForm({ ...form, name: e.target.value, nameErr: false })} />
+								<p>Room:</p>
 								<Input
 									value={form.room}
-									onChange={e => setForm({ ...form, room: e.target.value })} />
+									style={form.roomErr ? { borderColor: 'red' } : {}}
+									onChange={e => setForm({ ...form, room: e.target.value, roomErr: false })} />
 							</form>
-							<div className="rooms-cont">
+							<p>Available Rooms:</p>
+							<div className="rooms">
 								{rooms.map((room, i) => (
 									<div
 										key={i}
 										className="room"
-										onClick={() => setForm({ ...form, room: room.name })}>
+										onClick={() => setForm({ ...form, room: room.name, roomErr: false })}>
 										{room.name}
 									</div>
 								))}
@@ -90,58 +99,10 @@ const Home = () => {
 						</div>
 					</div>
 				</main>
+				<footer>
+					<p>© 2020 BoardMaster | All rights reserved.</p>
+				</footer>
 			</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			{/* <div className="join-main">
-				<h1>Welcome to NoEmmet</h1>
-				<form id="join-form" className="input-area" onSubmit={e => {
-					e.preventDefault()
-					if (!form.name || !form.room) return
-					history.push(`/room/name=${form.name}&room=${form.room}`)
-				}}>
-					<Input
-						placeholder="Name"
-						value={form.name}
-						onChange={e => setForm({ ...form, name: e.target.value })} />
-					<Input
-						placeholder="Room"
-						value={form.room}
-						onChange={e => setForm({ ...form, room: e.target.value })} />
-				</form>
-				<br />
-				<div className="button-area">
-					{rooms.length > 0 &&
-						<span>Available Rooms: <select
-							value={form.room}
-							onChange={e => setForm({ ...form, room: e.target.value })}>
-							<option value="" disabled hidden>{rooms.length}</option>
-							{rooms.map((room, i) => (
-								<option key={i} value={room.name}>{room.name}</option>
-							))}
-						</select>
-						</span>
-					}
-					<Button form="join-form" type="submit" text="Join Room" />
-				</div>
-			</div> */}
 		</>
 	)
 }
