@@ -77,10 +77,7 @@ const Room = ({ params }) => {
 
 	return (
 		<div className="room-main">
-			<Button className="leave-room" text="Leave" onClick={() => {
-				socket.disconnect()
-				history.push('/')
-			}} />
+
 			<nav>
 				<div className="nav-cont">
 					<p className="nav-title">
@@ -90,6 +87,10 @@ const Room = ({ params }) => {
 						<span className="board">{room}</span>
 					</p>
 				</div>
+				<Button className="leave-room" text="Leave" onClick={() => {
+					socket.disconnect()
+					history.push('/')
+				}} />
 			</nav>
 			<main>
 				<div className="session">
