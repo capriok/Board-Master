@@ -5,7 +5,7 @@ $darker: rgb(210, 210, 210);
 	@include flex;
 	flex-direction: column;
 	width: 100vw;
-	height: 100vh;
+	min-height: 100vh;
 	nav {
 		@include flex;
 		width: 100%;
@@ -26,13 +26,14 @@ $darker: rgb(210, 210, 210);
 		flex: 1;
 		@include flex;
 		flex-direction: column;
-		max-width: 1000px;
+		max-width: $max-width;
 		width: 100%;
 		.info {
 			flex: 1;
 			@include flex;
 			flex-direction: column;
 			height: 100%;
+			min-height: 250px;
 			.card-cont {
 				@include flex;
 				justify-items: flex-start;
@@ -49,18 +50,17 @@ $darker: rgb(210, 210, 210);
 			}
 		}
 		.join {
-			flex: 2;
+			flex: 1;
 			width: 100%;
 			height: 100%;
 			@include flex;
 			flex-direction: column;
-			justify-content: flex-start;
 			.join-cont {
 				overflow: hidden;
 				min-width: 300px;
 				padding: 20px;
 				border-radius: 10px;
-				box-shadow: 0px 3px 20px -7px;
+				border: 2px solid rgb(209, 209, 209);
 				background-color: rgb(235, 235, 235);
 				.join-title {
 					text-align: center;
@@ -69,7 +69,7 @@ $darker: rgb(210, 210, 210);
 					margin: -20px;
 					margin-bottom: 20px;
 					border-bottom: 2px solid black;
-					background-color: $darker;
+					background-color: white;
 				}
 				p {
 					width: 100%;
@@ -84,7 +84,7 @@ $darker: rgb(210, 210, 210);
 						width: 100%;
 						margin-bottom: 10px;
 						border: 1px solid black;
-						background-color: $darker;
+						background-color: white;
 						&:last-child {
 							margin-bottom: 0;
 						}
@@ -99,7 +99,7 @@ $darker: rgb(210, 210, 210);
 					margin-bottom: 20px;
 					border-radius: 5px;
 					border: 1px solid black;
-					background-color: $darker;
+					background-color: white;
 					.room {
 						user-select: none;
 						cursor: pointer;
@@ -109,7 +109,7 @@ $darker: rgb(210, 210, 210);
 						transition: 0.2s;
 						&:hover {
 							transition: 0.2s;
-							background-color: rgb(235, 235, 235);
+							background-color: rgb(220, 220, 220);
 						}
 					}
 				}
@@ -120,6 +120,9 @@ $darker: rgb(210, 210, 210);
 				}
 			}
 		}
+	}
+	footer {
+		margin-top: 100px;
 	}
 }
 

@@ -1,18 +1,38 @@
 @import "../../index.scss";
 
 .room-main {
-	user-select: none;
 	@include flex;
 	flex-direction: column;
-	background-color: $room-bg;
-	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 3px 3px 15px -5px black;
-	.leave-room {
-		position: fixed;
-		left: 10px;
-		bottom: 10px;
+	justify-content: flex-start;
+	width: 100%;
+	min-height: 100vh;
+	nav {
+		@include flex;
+		width: 100%;
+		height: 100px;
+		background-color: $blue-accent;
+		.nav-cont {
+			font-size: 1.4rem;
+			cursor: default;
+			@include flex;
+			justify-content: space-between;
+			width: 100%;
+			max-width: $max-width;
+			.nav-title {
+				color: white;
+				.board {
+					color: white;
+				}
+				.master {
+					color: rgb(150, 150, 150);
+				}
+			}
+			.nav-room {
+				color: white;
+			}
+		}
 	}
+
 	h1 {
 		text-align: center;
 		width: 100%;
@@ -21,9 +41,13 @@
 		border-bottom: 2px solid slategrey;
 	}
 	main {
+		flex: 1;
+		user-select: none;
 		@include flex;
 		align-items: flex-start;
 		width: 100%;
+		height: 100%;
+		margin-top: 20px;
 		.session {
 			@include flex;
 			flex-direction: column;
@@ -45,5 +69,10 @@
 				}
 			}
 		}
+	}
+	.leave-room {
+		position: fixed;
+		left: 10px;
+		bottom: 10px;
 	}
 }

@@ -81,7 +81,16 @@ const Room = ({ params }) => {
 				socket.disconnect()
 				history.push('/')
 			}} />
-			<h1>Welcome to room {room}</h1>
+			<nav>
+				<div className="nav-cont">
+					<p className="nav-title">
+						<span className="board">Board</span> <span className="master">Master</span>
+					</p>
+					<p className="nav-room">
+						<span className="board">{room}</span>
+					</p>
+				</div>
+			</nav>
 			<main>
 				<div className="session">
 					{practiceEditor

@@ -29,10 +29,10 @@
   align-items: center;
 }
 
+$max-width: 1000px;
 $app-bg: white;
 $blue-accent: rgb(14, 17, 26);
-$room-bg: rgb(200, 200, 200);
-$room-accent: rgb(190, 190, 190);
+$room-accent: rgb(215, 215, 215);
 
 * {
   box-sizing: border-box;
@@ -51,12 +51,9 @@ html {
 h1 {
   font-family: "Open Sans", sans-serif;
   font-weight: 400;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 
 .app {
-  @include flex;
-  flex-direction: column;
-  min-height: 100vh;
   background-color: $app-bg;
 }
