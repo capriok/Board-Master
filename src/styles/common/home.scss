@@ -69,18 +69,28 @@ $darker: rgb(210, 210, 210);
 					margin: -20px;
 					margin-bottom: 20px;
 					border-bottom: 2px solid black;
-					background-color: white;
+					color: white;
+					background-color: $blue-accent;
 				}
 				p {
+					@include flex;
+					justify-content: flex-start;
+					font-size: 0.95rem;
 					width: 100%;
+					margin-top: 0;
 					margin-bottom: 5px;
 					text-align: left;
+					span {
+						margin-left: auto;
+						color: rgb(192, 11, 11);
+					}
 				}
 				.inputs {
 					@include flex;
 					flex-direction: column;
 					margin-bottom: 20px;
 					input {
+						text-transform: capitalize;
 						width: 100%;
 						margin-bottom: 10px;
 						border: 1px solid black;

@@ -1,5 +1,5 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
+/*eslint no-useless-escape: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../../styles/chat/chat.scss'
@@ -14,18 +14,6 @@ const RoomChat = (props) => {
 
 	const endRef = useRef()
 
-	const firstOfSender = (m, i) => {
-		let first = true
-		if (m.serverMessage) return
-		if (i > 0) {
-			if (messages[i - 1].name === m.name) {
-				messages[i - 1].serverMessage
-					? first = true
-					: first = false
-			}
-		}
-		return first
-	}
 
 	useEffect(() => {
 		endRef.current.scrollIntoView()
@@ -42,22 +30,60 @@ const RoomChat = (props) => {
 		setInputMessage('')
 	}
 
+	const firstOfSender = (m, i) => {
+		let first = true
+		if (m.serverMessage) return
+		if (i > 0) {
+			if (messages[i - 1].name === m.name) {
+				messages[i - 1].serverMessage
+					? first = true
+					: first = false
+			}
+		}
+		return first
+	}
+
+	function messageWrapClass(m) {
+		return m.name === User.name
+			? "message local-align"
+			: "message foreign-align"
+	}
+
+	function messageSenderClass(m) {
+		return m.name === User.name
+			? "sender local-align"
+			: "sender foreign-align"
+	}
+
+	function messageTextClass(m) {
+		return m.name === User.name
+			? "body local-align local-color"
+			: "body foreign-align foreign-color"
+	}
+
+	function isUrl(s) {
+		const httpExp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+		const wwwExp = /(www).?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+		if (httpExp.test(s) || wwwExp.test(s)) {
+			return true
+		} else return false
+	}
+
 	return (
 		<>
 			<div className="chat-cont">
 				<UsersDropdown {...props} />
 				<div className="message-area">
 					{messages.map((m, i) => {
-						const isLocalUser = m.name === User.name
 						return (
-							<div key={i} className={isLocalUser ? "message" : "message other"}>
+							<div key={i} className={messageWrapClass(m)}>
 								{firstOfSender(m, i) &&
-									<span className={isLocalUser ? "sender" : "sender other"}>
-										{m.name}
-									</span>}
-								<span className={m.serverMessage ? "body server-message" : isLocalUser ? "body" : "body other"}>
-									{m.message}
-								</span>
+									<span className={messageSenderClass(m)}>{m.name}</span>
+								}
+								{isUrl(m.message)
+									? <a className={messageTextClass(m)} href={m.message} target="_blank" rel="noopener noreferrer">{m.message}</a>
+									: <span className={messageTextClass(m)}>{m.message}</span>
+								}
 							</div>
 						)
 					})}

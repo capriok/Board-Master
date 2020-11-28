@@ -1,5 +1,3 @@
-/*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 

@@ -1,5 +1,4 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect } from "react"
 
 import '../../styles/lobby/lobby-editors.scss'
@@ -108,7 +107,7 @@ const PracticeEditor = (props) => {
 				<Button
 					className="options-button"
 					text={optionsOpen ? "Options ●" : "Options ○"}
-					onClick={() => toggleOptions(!optionsOpen)} />
+					onClick={() => { toggleOptions(!optionsOpen); optionsOpen && resetEditor() }} />
 				<Button
 					className="practice-button"
 					text="Practice ●"

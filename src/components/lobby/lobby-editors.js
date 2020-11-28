@@ -1,5 +1,4 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from "react"
 
 import '../../styles/lobby/lobby-editors.scss'
@@ -137,9 +136,7 @@ const LobbyEditors = (props) => {
 			let isDraw = p1s === p2s
 			if (isDraw) {
 				return {
-					outcome: 'draw',
-					winner: {},
-					loser: {},
+					outcome: 'draw'
 				}
 			} else {
 				return {

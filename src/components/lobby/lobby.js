@@ -1,5 +1,4 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React from 'react'
 
 import '../../styles/lobby/lobby.scss'

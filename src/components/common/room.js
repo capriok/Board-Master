@@ -1,5 +1,4 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import io from 'socket.io-client'
@@ -44,6 +43,11 @@ const Room = ({ params }) => {
 			socket.emit('join', { name, room })
 		})
 
+		socket.on('duplicate-name', () => {
+			console.log('hit')
+			history.push('/')
+		})
+
 		socket.on('room-users', (list) => {
 			console.log('User List', { list })
 			setUsers(list)
@@ -54,15 +58,16 @@ const Room = ({ params }) => {
 			setHostId(id)
 		})
 
+		socket.on('room-lobby', (lobby) => {
+			console.log('Lobby', { lobby });
+			setLobby(lobby)
+		})
+
 		socket.on('local-user', (user) => {
 			console.log('Local User', { user })
 			setUser(user)
 		})
 
-		socket.on('room-lobby', (lobby) => {
-			console.log('Lobby', { lobby });
-			setLobby(lobby)
-		})
 		return () => socket.disconnect()
 	}, [])
 

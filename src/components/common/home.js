@@ -1,5 +1,4 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
-/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
@@ -16,13 +15,15 @@ const Home = () => {
 	const [form, setForm] = useState({
 		name: '',
 		nameErr: false,
+		nameUsed: false,
 		room: '',
-		roomErr: false,
-
+		roomErr: false
 	})
 	const history = useHistory()
 
-	function joinRoom(e) {
+	const cap = s => s[0].toUpperCase() + s.slice(1)
+
+	async function joinRoom(e) {
 		e.preventDefault()
 		if (!form.name || !form.room) {
 			return setForm({
@@ -31,7 +32,18 @@ const Home = () => {
 				roomErr: !form.room ? true : false
 			})
 		}
-		history.push(`/room/name=${form.name}&room=${form.room.capitalize()}`)
+
+		let url = new URL(process.env.REACT_APP_ENDPOINT + '/io/get-users:')
+		url.search = new URLSearchParams({ name: cap(form.name), room: cap(form.room) })
+		let res = await fetch(url)
+		let userExists = await res.json()
+
+		if (userExists) {
+			setForm({ ...form, nameUsed: true })
+		} else {
+			history.push(`/room/name=${cap(form.name)}&room=${cap(form.room)}`)
+		}
+
 	}
 
 	useEffect(() => {
@@ -71,11 +83,11 @@ const Home = () => {
 						<div className="join-cont">
 							<h1 className="join-title">Join a room</h1>
 							<form id="join-form" className="inputs" onSubmit={e => joinRoom(e)}>
-								<p>Name:</p>
+								<p>Name:{form.nameUsed && <span>Already in use</span>}</p>
 								<Input
 									value={form.name}
 									style={form.nameErr ? { borderColor: 'red' } : {}}
-									onChange={e => setForm({ ...form, name: e.target.value, nameErr: false })} />
+									onChange={e => setForm({ ...form, name: e.target.value, nameErr: false, nameUsed: false })} />
 								<p>Room:</p>
 								<Input
 									value={form.room}

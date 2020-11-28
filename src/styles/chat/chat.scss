@@ -13,6 +13,7 @@
 		min-width: 400px;
 		max-width: 400px;
 		min-height: 600px;
+		max-height: 600px;
 		@include flex;
 		flex-direction: column;
 		justify-content: flex-start;
@@ -27,11 +28,10 @@
 		justify-content: flex-end;
 		flex-direction: column;
 		width: 100%;
-		margin-bottom: 10px;
+		margin: 10px 0;
 		.message {
 			@include flex;
 			flex-direction: column;
-			align-items: flex-end;
 			width: fit-content;
 			margin: 0 10px;
 			margin-bottom: 2px;
@@ -46,12 +46,19 @@
 				font-size: 0.9rem;
 				padding: 5px 10px;
 				border-radius: 15px;
-				background-color: rgb(35, 90, 134);
-				background-color: $blue-accent;
 				color: white;
 			}
 		}
-		.other {
+		.local-color {
+			background-color: $local-msg;
+		}
+		.foreign-color {
+			background-color: $foreign-msg;
+		}
+		.local-align {
+			align-self: flex-end;
+		}
+		.foreign-align {
 			align-self: flex-start;
 		}
 	}
