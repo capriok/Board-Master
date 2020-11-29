@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import '../../styles/common/home.scss'
+import 'styles/common/home.scss'
 
-import speed from '../../assets/speed.png'
-import versus from '../../assets/versus.png'
-import chat from '../../assets/chat.png'
+import speed from 'assets/speed.png'
+import versus from 'assets/versus.png'
+import chat from 'assets/chat.png'
 
 import { Button, Input } from 'godspeed'
 
-const Home = () => {
-	const [rooms, setRooms] = useState([])
-	const [form, setForm] = useState({
+const Home: React.FC = () => {
+	const [rooms, setRooms] = useState<Room[]>([])
+	const [form, setForm] = useState<HomeForm>({
 		name: '',
 		nameErr: false,
 		nameUsed: false,
@@ -21,9 +21,9 @@ const Home = () => {
 	})
 	const history = useHistory()
 
-	const cap = s => s[0].toUpperCase() + s.slice(1)
+	const capitalize = (s: String) => s[0].toUpperCase() + s.slice(1)
 
-	async function joinRoom(e) {
+	async function joinRoom(e: FormEvent) {
 		e.preventDefault()
 		if (!form.name || !form.room) {
 			return setForm({
@@ -33,21 +33,26 @@ const Home = () => {
 			})
 		}
 
-		let url = new URL(process.env.REACT_APP_ENDPOINT + '/io/get-users:')
-		url.search = new URLSearchParams({ name: cap(form.name), room: cap(form.room) })
-		let res = await fetch(url)
-		let userExists = await res.json()
+		const params = `name=${capitalize(form.name)}&room=${capitalize(form.room)}`
 
-		if (userExists) {
-			setForm({ ...form, nameUsed: true })
-		} else {
-			history.push(`/room/name=${cap(form.name)}&room=${cap(form.room)}`)
+		let url = new URL(process.env.REACT_APP_ENDPOINT + '/io/get-users:')
+		url.search = params
+
+		async function checkUsers(request: RequestInfo): Promise<Boolean> {
+			const response = await fetch(request)
+			const body = await response.json()
+			return body
 		}
 
+		let userExists = await checkUsers(url.toString())
+
+		userExists
+			? setForm({ ...form, nameUsed: true })
+			: history.push(`/room/${params}`)
 	}
 
 	useEffect(() => {
-		(async () => {
+		(async function (): Promise<void> {
 			let res = await fetch(process.env.REACT_APP_ENDPOINT + '/io/get-rooms')
 			let data = await res.json()
 			setRooms(data)
@@ -82,7 +87,7 @@ const Home = () => {
 					<div className="join">
 						<div className="join-cont">
 							<h1 className="join-title">Join a room</h1>
-							<form id="join-form" className="inputs" onSubmit={e => joinRoom(e)}>
+							<form id="join-form" className="inputs" onSubmit={(e: FormEvent) => joinRoom(e)}>
 								<p>Name:{form.nameUsed && <span>Already in use</span>}</p>
 								<Input
 									value={form.name}

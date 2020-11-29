@@ -1,31 +1,42 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 import React, { useState, useEffect, useRef } from "react"
 
-import '../../styles/lobby/lobby-editors.scss'
+import 'styles/lobby/lobby-editors.scss'
 
 import { Button, Input } from 'godspeed'
 
 const randomWords = require('random-words')
 
-const LobbyEditors = (props) => {
-	const { socket, lobby, User, HostId } = props
+interface Props {
+	socket: Socket
+	lobby: Lobby
+	User: User
+	HostId: string
+}
 
-	const [loading, setLoading] = useState(true)
-	const [count, setCount] = useState(null)
-	const [resetCount, setResetCount] = useState(null)
-	const [wordSet, setWordSet] = useState([])
-	const [wordInput, setWordInput] = useState('')
-	const [currentIndex, setCurrentIndex] = useState(0)
-	const [wordClasses, setwordClasses] = useState([])
-	const [correctKeys, setCorrectKeys] = useState(0)
+const LobbyEditors: React.FC<Props> = ({
+	socket,
+	lobby,
+	User,
+	HostId
+}) => {
 
-	const [playerOne, setPlayerOne] = useState({})
-	const [playerTwo, setPlayerTwo] = useState({})
-	let playerOneRef = useRef(null)
-	let playerTwoRef = useRef(null)
+	const [loading, setLoading] = useState<boolean>(true)
+	const [count, setCount] = useState<null | number>(null)
+	const [resetCount, setResetCount] = useState<null | number>(null)
+	const [wordSet, setWordSet] = useState<string[]>([])
+	const [wordInput, setWordInput] = useState<string>('')
+	const [currentIndex, setCurrentIndex] = useState<number>(0)
+	const [wordClasses, setwordClasses] = useState<string[]>([])
+	const [correctKeys, setCorrectKeys] = useState<number>(0)
 
-	const [winner, setWinner] = useState({})
-	const [draw, setDraw] = useState(false)
+	const [playerOne, setPlayerOne] = useState<any>({})
+	const [playerTwo, setPlayerTwo] = useState<any>({})
+	let playerOneRef: any = useRef(null)
+	let playerTwoRef: any = useRef(null)
+
+	const [winner, setWinner] = useState<any>({})
+	const [draw, setDraw] = useState<boolean>(false)
 
 	const isHost = User.userId === HostId
 	const isPlayer = lobby.players.some(p => p.userId === User.userId)
@@ -39,17 +50,13 @@ const LobbyEditors = (props) => {
 	}, [lobby])
 
 	useEffect(() => {
-		matchFinished && determineWinner()
-	}, [matchFinished])
-
-	useEffect(() => {
 		if (!lobby.inSession) {
 			let wordSet = []
 			if (isHost) wordSet = randomWords({ exactly: lobby.options.exactly, maxLength: lobby.options.maxLength })
 			socket.emit('lobby-development', { wordSet })
-			socket.on('lobby-words', (wordSet) => setWordSet(wordSet))
-			socket.on('lobby-countdown', (count) => setCount(count))
-			socket.on('lobby-reset', (count) => setResetCount(count))
+			socket.on('lobby-words', (wordSet: string[]) => setWordSet(wordSet))
+			socket.on('lobby-countdown', (count: number) => setCount(count))
+			socket.on('lobby-reset', (count: number) => setResetCount(count))
 		} else {
 			setLoading(false)
 			setWordSet(lobby.wordSet)
@@ -74,26 +81,30 @@ const LobbyEditors = (props) => {
 		if (wordSet.length > 0) currentIndex === wordSet.length && calculate()
 	}, [currentIndex])
 
+	useEffect(() => {
+		matchFinished && determineWinner()
+	}, [matchFinished])
+
 	function inputChange(e) {
 		if (currentIndex !== wordSet.length) {
 			setWordInput(e.target.value.replace(/[^a-z]/ig, '').toLowerCase())
 		}
 	}
 
-	function incrementIndex() {
+	function incrementIndex(): void {
 		setCurrentIndex(currentIndex + 1)
 		socket.emit('player-current-index', { currentIndex: currentIndex + 1 })
 		setWordInput('')
 	}
 
-	function setCurrentClass(evaluation) {
+	function setCurrentClass(evaluation: string): void {
 		setwordClasses([...wordClasses, evaluation])
 		socket.emit('player-word-classes', { wordClasses: [...wordClasses, evaluation] })
 		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length + 1)
 		incrementIndex()
 	}
 
-	function checkWord(e) {
+	function checkWord(e: any): void {
 		let key = e.key
 		let isLastWord = currentIndex === wordSet.length - 1
 		let lastWord = wordSet[wordSet.length - 1]
@@ -111,7 +122,7 @@ const LobbyEditors = (props) => {
 		}
 	}
 
-	function calculate() {
+	function calculate(): void {
 		let totalChars = 0
 		let errors = 0
 		let words = (correctKeys / 5)
@@ -124,15 +135,19 @@ const LobbyEditors = (props) => {
 		})
 	}
 
-	function determineWinner() {
+	function determineWinner(): void {
 		if (!lobby.inSession) return
 
-		function calculateScore(wpm, acc) {
+		function calculateScore(wpm: number, acc: number): number {
 			let score = (wpm / wordSet.length) + (acc / 100) * acc
-			return score.toFixed(2)
+			return Number(score.toFixed(2))
 		}
 
-		function composeResult(p1s, p2s) {
+		function composeResult(p1s: number, p2s: number): {
+			outcome: string,
+			winner?: Player,
+			loser?: Player
+		} {
 			let isDraw = p1s === p2s
 			if (isDraw) {
 				return {
@@ -151,8 +166,8 @@ const LobbyEditors = (props) => {
 			}
 		}
 
-		let playerOneScore = calculateScore(playerOne.wpm, playerOne.accuracy)
-		let playerTwoScore = calculateScore(playerTwo.wpm, playerTwo.accuracy)
+		let playerOneScore = calculateScore(playerOne.wpm, playerOne.acc)
+		let playerTwoScore = calculateScore(playerTwo.wpm, playerTwo.acc)
 
 		let matchResult = composeResult(playerOneScore, playerTwoScore)
 
@@ -162,13 +177,13 @@ const LobbyEditors = (props) => {
 		setWinner(matchResult.winner)
 	}
 
-	function p1WordClass(i) {
+	function p1WordClass(i: number): string {
 		return i === playerOne.currentIndex
 			? 'current'
 			: playerOne.wordClasses[i]
 	}
 
-	function p2WordClass(i) {
+	function p2WordClass(i: number): string {
 		return i === playerTwo.currentIndex
 			? 'current'
 			: playerTwo.wordClasses[i]
@@ -229,7 +244,7 @@ const LobbyEditors = (props) => {
 									<div className="stats-cont">
 										<div className="stats">
 											<p><span>{playerOne.wpm}</span> Words / Minute</p>
-											<p><span>{playerOne.accuracy}%</span> Accuracy</p>
+											<p><span>{playerOne.acc}%</span> Accuracy</p>
 										</div>
 									</div>
 								}
@@ -272,7 +287,7 @@ const LobbyEditors = (props) => {
 									<div className="stats-cont">
 										<div className="stats">
 											<p><span>{playerTwo.wpm}</span> Words/ Minute</p>
-											<p><span>{playerTwo.accuracy}%</span> Accuracy</p>
+											<p><span>{playerTwo.acc}%</span> acc</p>
 										</div>
 									</div>
 								}

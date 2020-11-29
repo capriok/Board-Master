@@ -1,52 +1,69 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 import React, { useState, useEffect } from "react"
 
-import '../../styles/lobby/lobby-editors.scss'
-import '../../styles/lobby/practice-editor.scss'
+import 'styles/lobby/lobby-editors.scss'
+import 'styles/lobby/practice-editor.scss'
 
 import { Button, Input } from 'godspeed'
 import PracticeOptions from './practice-options'
 
 const randomWords = require('random-words')
 
-const PracticeEditor = (props) => {
-	const { User, practiceEditor, setPracticeEditor, practiceOptions, setPracticeOptions } = props
+interface Props {
+	User: User
+	practiceEditor: boolean
+	setPracticeEditor: SetPracticeEditor
+	practiceOptions: LobbyOptions
+	setPracticeOptions: SetPracticeOptions
+}
 
-	const RANDOM_WORDS = randomWords({ exactly: practiceOptions.exactly, maxLength: practiceOptions.maxLength })
+const PracticeEditor: React.FC<Props> = ({
+	User,
+	practiceEditor,
+	setPracticeEditor,
+	practiceOptions,
+	setPracticeOptions
+}) => {
+
+	const RANDOM_WORDS = randomWords({
+		exactly: practiceOptions.exactly,
+		maxLength: practiceOptions.maxLength
+	})
 
 	const [optionsOpen, toggleOptions] = useState(false)
 
-	const [startTime, setStartTime] = useState(null)
-	const [wordSet, setWordSet] = useState(RANDOM_WORDS)
-	const [wordInput, setWordInput] = useState('')
-	const [currentIndex, setCurrentIndex] = useState(0)
-	const [wordClasses, setwordClasses] = useState([])
-	const [correctKeys, setCorrectKeys] = useState(0)
-	const [wpm, setWPM] = useState(0)
-	const [acc, setAcc] = useState(0)
+	const [startTime, setStartTime] = useState<number>(0)
+	const [wordSet, setWordSet] = useState<string[]>(RANDOM_WORDS)
+	const [wordInput, setWordInput] = useState<string>('')
+	const [currentIndex, setCurrentIndex] = useState<number>(0)
+	const [wordClasses, setwordClasses] = useState<string[]>([])
+	const [correctKeys, setCorrectKeys] = useState<number>(0)
+	const [wpm, setWPM] = useState<number>(0)
+	const [acc, setAcc] = useState<number>(0)
 
 	useEffect(() => {
 		setWordSet(RANDOM_WORDS)
 	}, [practiceOptions])
 
-	function inputChange(e) {
+	function inputChange(e: any): void {
 		if (currentIndex !== wordSet.length) {
 			setWordInput(e.target.value.replace(/[^a-z]/ig, '').toLowerCase())
 		}
 	}
 
-	function incrementIndex() {
+	function incrementIndex(): void {
 		setCurrentIndex(currentIndex + 1)
 		setWordInput('')
 	}
 
-	function setCurrentClass(evaluation) {
+	function setCurrentClass(evaluation: string): void {
 		setwordClasses([...wordClasses, evaluation])
-		evaluation === 'correct' && setCorrectKeys(correctKeys + wordSet[currentIndex].length + 1)
+		evaluation === 'correct'
+			&& setCorrectKeys(correctKeys + wordSet[currentIndex].length + 1)
 		incrementIndex()
 	}
 
-	function checkWord(e) {
+	function checkWord(e: any): void {
 		let key = e.key
 		let isLastWord = currentIndex === wordSet.length - 1
 		let lastWord = wordSet[wordSet.length - 1]
@@ -65,7 +82,7 @@ const PracticeEditor = (props) => {
 		}
 	}
 
-	function calculate() {
+	function calculate(): void {
 		let totalChars = 0
 		let errors = 0
 		let words = (correctKeys / 5)
@@ -76,8 +93,8 @@ const PracticeEditor = (props) => {
 		setAcc(Math.floor((correctKeys / totalChars) * 100))
 	}
 
-	function resetEditor() {
-		setStartTime(null)
+	function resetEditor(): void {
+		setStartTime(0)
 		setWordSet(RANDOM_WORDS)
 		setWordInput('')
 		setCurrentIndex(0)
@@ -95,7 +112,7 @@ const PracticeEditor = (props) => {
 		currentIndex === wordSet.length && calculate()
 	}, [currentIndex])
 
-	function wordClass(i) {
+	function wordClass(i: number): string {
 		return i === currentIndex
 			? 'current'
 			: wordClasses[i]
@@ -107,7 +124,10 @@ const PracticeEditor = (props) => {
 				<Button
 					className="options-button"
 					text={optionsOpen ? "Options ●" : "Options ○"}
-					onClick={() => { toggleOptions(!optionsOpen); optionsOpen && resetEditor() }} />
+					onClick={() => {
+						toggleOptions(!optionsOpen)
+						optionsOpen && resetEditor()
+					}} />
 				<Button
 					className="practice-button"
 					text="Practice ●"
@@ -116,7 +136,10 @@ const PracticeEditor = (props) => {
 			<div className="editors">
 				<div className="editor-cont">
 					{optionsOpen
-						? <PracticeOptions practiceOptions={practiceOptions} setPracticeOptions={setPracticeOptions} />
+						? <PracticeOptions
+							practiceOptions={practiceOptions}
+							setPracticeOptions={setPracticeOptions}
+						/>
 						: <>
 							<div className="head">
 								<div className="name">
@@ -132,10 +155,15 @@ const PracticeEditor = (props) => {
 								</div>
 								<div className="input-area">
 									{wordSet.length === currentIndex
-										? <Button text="Go Again" onClick={() => resetEditor()} />
+										? <Button
+											text="Go Again"
+											onClick={() => resetEditor()} />
 										: <Input
 											autoFocus
-											placeholder={currentIndex === 0 ? 'Scoring starts when you start typing' : ''}
+											placeholder={currentIndex === 0
+												? 'Scoring starts when you start typing'
+												: ''
+											}
 											onChange={(e) => inputChange(e)}
 											onKeyDown={(e) => checkWord(e)}
 											value={wordInput} />}

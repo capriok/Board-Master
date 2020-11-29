@@ -1,8 +1,8 @@
-const cors = require('cors')
+export const cors = require('cors')
 
-const corsOptions = (whitelist) => {
+export const corsOptions = (whitelist: string[]): { origin: any; credentials: Boolean } => {
 	return {
-		origin: function (origin, callback) {
+		origin: (origin: string, callback: (arg0: Error | null, arg1?: Boolean) => any) => {
 			if (whitelist.indexOf(origin) !== -1) {
 				callback(null, true)
 			} else {
@@ -13,7 +13,7 @@ const corsOptions = (whitelist) => {
 	}
 }
 
-const corsMiddleware = (req, res, next) => {
+export const corsMiddleware = (req, res, next) => {
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	if (req.method === "OPTIONS") {
 		res.header("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE");
@@ -21,5 +21,3 @@ const corsMiddleware = (req, res, next) => {
 	}
 	next();
 }
-
-module.exports = { cors, corsOptions, corsMiddleware }

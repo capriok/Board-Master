@@ -1,27 +1,44 @@
 /*eslint react-hooks/exhaustive-deps: "off"*/
 import React from 'react'
 
-import '../../styles/lobby/lobby.scss'
+import 'styles/lobby/lobby.scss'
 
 import { Button } from 'godspeed'
 import LobbyOptions from './lobby-options'
 
-const Lobby = (props) => {
-	const { socket, lobby, User, setPracticeEditor } = props
+interface Props {
+	socket: Socket
+	lobby: Lobby
+	User: User
+	setPracticeEditor: SetPracticeEditor
+}
 
-	const isPlayer = lobby.players.some(player => player.userId === User.userId)
-	const isPlayerReady = lobby.players.some(player => player.userId === User.userId && player.ready === true)
+const Lobby: React.FC<Props> = ({
+	socket,
+	lobby,
+	User,
+	setPracticeEditor
+}) => {
+
+	const isPlayer = lobby.players.some(player => {
+		return player.userId === User.userId
+	})
+
+	const isPlayerReady = lobby.players.some(player => {
+		return player.userId === User.userId && player.ready === true
+	})
+
 	const isFull = lobby.playerCount === 2
 
-	function joinLobby() {
+	function joinLobby(): void {
 		socket.emit('join-lobby', User)
 	}
 
-	function leaveLobby() {
+	function leaveLobby(): void {
 		socket.emit('leave-lobby', User)
 	}
 
-	function setReady() {
+	function setReady(): void {
 		socket.emit('set-ready', User)
 	}
 
@@ -68,7 +85,9 @@ const Lobby = (props) => {
 						}
 					</div>
 				</div>
-				<LobbyOptions {...props} />
+				<LobbyOptions
+					lobby={lobby}
+					socket={socket} />
 			</div>
 		</div>
 	)

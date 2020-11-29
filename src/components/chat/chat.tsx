@@ -2,35 +2,48 @@
 /*eslint no-useless-escape: "off"*/
 import React, { useState, useEffect, useRef } from 'react'
 
-import '../../styles/chat/chat.scss'
+import 'styles/chat/chat.scss'
 
 import UsersDropdown from './users-dropdown'
 import { Input, Button } from 'godspeed'
 
-const RoomChat = (props) => {
-	const { socket, User } = props
+interface Props {
+	socket: Socket
+	User: User
+	users: User[]
+	name: string
+	usersDropdown: boolean
+}
+
+const RoomChat: React.FC<Props> = ({
+	socket,
+	User,
+	users,
+	name,
+	usersDropdown
+}) => {
+
 	const [inputMessage, setInputMessage] = useState('')
-	const [messages, setMessages] = useState([])
+	const [messages, setMessages] = useState<Message[]>([])
 
-	const endRef = useRef()
-
+	const endRef: React.MutableRefObject<any> | undefined = useRef()
 
 	useEffect(() => {
 		endRef.current.scrollIntoView()
-		socket.on('new-message', (message) => {
-			console.log('New Message', { message });
+		socket.on('new-message', (message: Message): void => {
+			console.log('New Message', { message })
 			setMessages(msgs => [...msgs, message])
 			endRef.current.scrollIntoView()
 		})
 	}, [])
 
-	function sendMessage() {
+	function sendMessage(): void {
 		if (!inputMessage) return
-		socket.emit('send-message', { name: props.name, message: inputMessage })
+		socket.emit('send-message', { name: name, message: inputMessage })
 		setInputMessage('')
 	}
 
-	const firstOfSender = (m, i) => {
+	const firstOfSender = (m: Message, i: number): boolean | void => {
 		let first = true
 		if (m.serverMessage) return
 		if (i > 0) {
@@ -43,25 +56,25 @@ const RoomChat = (props) => {
 		return first
 	}
 
-	function messageWrapClass(m) {
+	function messageWrapClass(m: Message): string {
 		return m.name === User.name
 			? "message local-align"
 			: "message foreign-align"
 	}
 
-	function messageSenderClass(m) {
+	function messageSenderClass(m: Message): string {
 		return m.name === User.name
 			? "sender local-align"
 			: "sender foreign-align"
 	}
 
-	function messageTextClass(m) {
+	function messageTextClass(m: Message): string {
 		return m.name === User.name
 			? "body local-align local-color"
 			: "body foreign-align foreign-color"
 	}
 
-	function isUrl(s) {
+	function isUrl(s: string): boolean {
 		const httpExp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
 		const wwwExp = /(www).?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
 		if (httpExp.test(s) || wwwExp.test(s)) {
@@ -72,7 +85,7 @@ const RoomChat = (props) => {
 	return (
 		<>
 			<div className="chat-cont">
-				<UsersDropdown {...props} />
+				<UsersDropdown users={users} User={User} usersDropdown={usersDropdown} />
 				<div className="message-area">
 					{messages.map((m, i) => {
 						return (

@@ -1,20 +1,38 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node -r ts-node/register ./src/server.ts",
+    "start:watch": "nodemon",
+    "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
+  },
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "lodash": "^4.17.20",
-    "nodemon": "^2.0.6",
     "random-words": "^1.1.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.10",
+    "eslint": "^7.14.0",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.2"
   }
 }

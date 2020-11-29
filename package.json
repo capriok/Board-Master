@@ -6,6 +6,13 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.10",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router": "^5.1.8",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/socket.io-client": "^1.4.34",
     "godspeed": "^2.0.16",
     "random-words": "^1.1.1",
     "react": "^16.14.0",
@@ -13,7 +20,8 @@
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "socket.io-client": "^2.3.1"
+    "socket.io-client": "^2.3.1",
+    "typescript": "^4.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,13 +1,21 @@
 /*eslint no-self-assign: "off"*/
 import React from 'react'
 
-import '../../styles/lobby/lobby-options.scss'
+import 'styles/lobby/lobby-options.scss'
 
 import { Input } from 'godspeed'
 
-const PracticeOptions = ({ practiceOptions, setPracticeOptions }) => {
+interface Props {
+	practiceOptions: LobbyOptions
+	setPracticeOptions: SetPracticeOptions
+}
 
-	function inputChange(prop, val, min, max) {
+const PracticeOptions: React.FC<Props> = ({
+	practiceOptions,
+	setPracticeOptions
+}) => {
+
+	function inputChange(prop: string, val: any, min: number, max: number): void {
 		val === '' || val < min ? val = min : val > max ? val = max : val = val
 		setPracticeOptions({ ...practiceOptions, [prop]: parseInt(val) })
 	}

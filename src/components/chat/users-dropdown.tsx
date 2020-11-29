@@ -1,12 +1,18 @@
 import React from 'react'
 
-import '../../styles/chat/users-dropdown.scss'
+import 'styles/chat/users-dropdown.scss'
 
-const UsersDropdown = (props) => {
+interface Props {
+	users: User[]
+	User: User
+	usersDropdown: Boolean
+}
 
-	const { users, User, usersDropdown } = props
-
-	return (
+const UsersDropdown: React.FC<Props> = ({
+	users,
+	User,
+	usersDropdown
+}) => (
 		<>
 			{usersDropdown &&
 				<div className="users">
@@ -17,6 +23,5 @@ const UsersDropdown = (props) => {
 			}
 		</>
 	)
-}
 
 export default UsersDropdown

@@ -1,18 +1,25 @@
 /*eslint no-self-assign: "off"*/
 import React, { useState, useEffect } from 'react'
 
-import '../../styles/lobby/lobby-options.scss'
+import 'styles/lobby/lobby-options.scss'
 
 import { Input } from 'godspeed'
 
-const LobbyOptions = (props) => {
-	const { socket, lobby } = props
+interface Props {
+	socket: Socket
+	lobby: Lobby
+}
 
-	const [options, setOptions] = useState({})
+const LobbyOptions: React.FC<Props> = ({
+	socket,
+	lobby
+}) => {
+
+	const [options, setOptions] = useState<LobbyOptions>({})
 
 	const informalPlayersReady = lobby.players.length === 2 && lobby.players.every(p => p.ready === true)
 
-	function inputChange(prop, val, min, max) {
+	function inputChange(prop: string, val: any, min: number, max: number): void {
 		val === '' || val < min ? val = min : val > max ? val = max : val = val
 		socket.emit('lobby-options', { ...options, [prop]: parseInt(val) })
 	}
