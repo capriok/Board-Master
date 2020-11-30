@@ -99,7 +99,7 @@ export namespace BMClasses {
 			this.inSession = false
 			this.startTime = null
 		}
-		getPlayer(player: PlayerClass): PlayerClass | void {
+		getPlayer(player: PlayerClass): PlayerClass {
 			if (player === undefined) return
 			return this.players.find(p => p.userId === player.userId)
 		}
