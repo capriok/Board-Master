@@ -15,12 +15,15 @@ export namespace BMClasses {
 			return this.rooms
 		}
 		getRoom(room: string): RoomClass {
+			if (room === undefined) return
 			return this.rooms.find(rm => rm.name === room)
 		}
 		getUsers(room: string): UserClass[] {
+			if (room === undefined) return
 			return this.getRoom(room).users
 		}
 		getLobby(room: string): LobbyClass {
+			if (room === undefined) return
 			return this.getRoom(room).lobby
 		}
 
@@ -96,7 +99,8 @@ export namespace BMClasses {
 			this.inSession = false
 			this.startTime = null
 		}
-		getPlayer(player: PlayerClass): PlayerClass {
+		getPlayer(player: PlayerClass): PlayerClass | void {
+			if (player === undefined) return
 			return this.players.find(p => p.userId === player.userId)
 		}
 		getPlayers(): PlayerClass[] {
