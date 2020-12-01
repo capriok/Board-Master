@@ -15,12 +15,13 @@ app.use(express.json())
 
 app.use(cors(corsOptions(['http://localhost:3000', 'https://board-master.netlify.app'])), corsMiddleware)
 
-let netlifyEndpoint = '/.netlify/functions/server'
-app.use(`${netlifyEndpoint}/io`, socket.router)
+let netlifyProdEndpoint = process.env.NODE_ENV === 'development' ? '' : '/.netlify/functions/server'
+
+app.use(`${netlifyProdEndpoint}/io`, socket.router)
 
 server.listen(port, () => console.log(`Server running on port ${port}`))
 
-socket.initialize(io(server, { path: '/socket', serveClient: false }))
+socket.initialize(io(server, { path: `${netlifyProdEndpoint}/socket`, serveClient: false }))
 
 module.exports = app
 module.exports.handler = serverless(app)

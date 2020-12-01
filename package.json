@@ -13,6 +13,7 @@
     "@types/react-router": "^5.1.8",
     "@types/react-router-dom": "^5.1.6",
     "@types/socket.io-client": "^1.4.34",
+    "dotenv": "^8.2.0",
     "godspeed": "^2.0.16",
     "random-words": "^1.1.1",
     "react": "^16.14.0",

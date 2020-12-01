@@ -4,7 +4,7 @@
   "description": "bm-server",
   "main": "functions/server.js",
   "scripts": {
-    "dev": "node -r ts-node/register ./src/server.ts",
+    "dev": "node -r dotenv/config -r ts-node/register ./src/server.ts",
     "dev:watch": "nodemon",
     "start": "./node_modules/.bin/netlify-lambda serve src",
     "tsc": "tsc && npm run build",
@@ -20,7 +20,7 @@
     "watch": [
       "src"
     ],
-    "exec": "npm dev",
+    "exec": "npm run dev",
     "ext": "ts"
   },
   "license": "ISC",

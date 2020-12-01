@@ -35,12 +35,13 @@ const Home: React.FC = () => {
 
 		const params = `name=${capitalize(form.name)}&room=${capitalize(form.room)}`
 
-		let url = new URL(process.env.REACT_APP_ENDPOINT + '/get-users:')
+		let url = new URL(process.env.REACT_APP_ENDPOINT + '/io/get-users:')
 		url.search = params
 
 		async function checkUsers(request: RequestInfo): Promise<Boolean> {
 			const response = await fetch(request)
 			const body = await response.json()
+
 			return body
 		}
 
@@ -53,7 +54,7 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		(async function (): Promise<void> {
-			let res = await fetch(process.env.REACT_APP_ENDPOINT + '/get-rooms')
+			let res = await fetch(process.env.REACT_APP_ENDPOINT + '/io/get-rooms')
 			let data = await res.json()
 			setRooms(data)
 		})()
