@@ -13,7 +13,7 @@ const port = process.env.PORT || 9000
 
 app.use(express.json())
 
-app.use(cors(corsOptions(['http://localhost:3000'])), corsMiddleware)
+app.use(cors(corsOptions(['http://localhost:3000', 'https://board-master.netlify.app'])), corsMiddleware)
 
 let netlifyEndpoint = '/.netlify/functions/server'
 app.use(`${netlifyEndpoint}/io`, socket.router)
