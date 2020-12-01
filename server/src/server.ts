@@ -15,7 +15,8 @@ app.use(express.json())
 
 app.use(cors(corsOptions(['http://localhost:3000'])), corsMiddleware)
 
-app.use('/io', socket.router)
+let netlifyEndpoint = '/.netlify/functions/server'
+app.use(`${netlifyEndpoint}/io`, socket.router)
 
 server.listen(port, () => console.log(`Server running on port ${port}`))
 
