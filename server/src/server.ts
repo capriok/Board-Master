@@ -15,6 +15,9 @@ app.use(express.json())
 
 app.use(cors(corsOptions(['http://localhost:3000', 'https://board-master.netlify.app'])), corsMiddleware)
 
+
+console.log(process.env.NODE_ENV);
+
 let netlifyProdEndpoint = process.env.NODE_ENV === 'development' ? '' : '/.netlify/functions/server'
 
 app.use(`${netlifyProdEndpoint}/io`, socket.router)
