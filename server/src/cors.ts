@@ -1,6 +1,4 @@
-export const cors = require('cors')
-
-export const corsOptions = (whitelist: string[]): { origin: any; credentials: Boolean } => {
+export const corsOptions = (whitelist: string[]): { origin: any, credentials: Boolean } => {
 	return {
 		origin: (origin: string, callback: (arg0: Error | null, arg1?: Boolean) => any) => {
 			if (whitelist.indexOf(origin) !== -1) {

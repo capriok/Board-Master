@@ -1,8 +1,8 @@
-const router = require('express').Router()
+export const router = require('express').Router()
 import { BMClasses } from './classes/rooms'
 const Rooms = new BMClasses.RoomsClass()
 
-function initialize(io: any) {
+export function initialize(io: any) {
 
 	io.on("connection", (socket: any) => {
 		let Room: BMClasses.RoomClass
@@ -237,7 +237,6 @@ function initialize(io: any) {
 }
 
 
-
 // // GET REQUEST FOR ALL ROOMS, FOR BEFORE SOCKETS CONNECT
 router.get('/get-users:', (req, res) => {
 	const { name, room } = req.query
@@ -254,5 +253,3 @@ router.use('/get-rooms', (req, res) => {
 	const rooms = Rooms.getRooms()
 	res.json(rooms)
 })
-
-module.exports = { initialize, router }

@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "cd server && npm run start:watch",
+    "server": "cd server && npm run dev:watch",
     "dev": "concurrently \"npm start\" \"npm run server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
