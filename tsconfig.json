@@ -10,7 +10,7 @@
 		"noEmit": true,
 		"strict": true,
 		"allowJs": true,
-		"baseUrl": "src",
+		"baseUrl": "src/",
 		"module": "esnext",
 		"skipLibCheck": true,
 		"noImplicitAny": false,
