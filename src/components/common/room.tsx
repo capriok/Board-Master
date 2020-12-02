@@ -44,7 +44,7 @@ const Room: React.FC<Props> = ({
 
 	const ENDPOINT = process.env.REACT_APP_ENDPOINT || ''
 
-	const socketRef: React.MutableRefObject<Socket> = useRef(io(ENDPOINT, { path: '/socket' }))
+	const socketRef: React.MutableRefObject<Socket> = useRef(io(ENDPOINT, { path: '/socket.io' }))
 
 	const socket = socketRef.current
 
