@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import 'styles/common/home.scss'
+import 'styles/home.scss'
 
 import speed from 'assets/speed.png'
 import versus from 'assets/versus.png'
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
 										key={i}
 										className="room"
 										onClick={() => setForm({ ...form, room: room.name, roomErr: false })}>
-										{room.name}
+										<span>{room.name}</span><span>{room.users.length}</span>
 									</div>
 								))}
 							</div>

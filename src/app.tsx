@@ -1,10 +1,11 @@
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import Home from 'components/common/home'
-import Room from 'components/common/room'
+import Home from 'components/home'
+import Room from 'components/room'
 
 const App: React.FC = () => {
+  if (process.env.NODE_ENV === 'production') console.log = () => { }
   return (
     <div className="app" >
       <Router>

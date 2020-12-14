@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import io from 'socket.io-client'
 
-import 'styles/common/room.scss'
+import 'styles/room.scss'
 
 import PracticeEditor from 'components/lobby/practice-editor'
 import Lobby from 'components/lobby/lobby'
@@ -80,6 +80,10 @@ const Room: React.FC<Props> = ({
 			setUser(user)
 		})
 
+		socket.on('user-kicked', () => {
+			window.location.href = '/'
+		})
+
 		return () => socket.disconnect()
 	}, [])
 
@@ -130,6 +134,7 @@ const Room: React.FC<Props> = ({
 					</div>
 					<Chat
 						socket={socket}
+						HostId={HostId}
 						name={name}
 						User={User}
 						users={users}

@@ -1,4 +1,4 @@
-@import "../../index.scss";
+@import "../index.scss";
 
 $darker: rgb(210, 210, 210);
 .home-main {
@@ -101,7 +101,7 @@ $darker: rgb(210, 210, 210);
 					}
 				}
 				.rooms {
-					overflow-y: scroll;
+					overflow-y: auto;
 					flex-direction: column;
 					width: 100%;
 					max-height: 200px;
@@ -117,6 +117,12 @@ $darker: rgb(210, 210, 210);
 						width: 100%;
 						padding: 7px;
 						transition: 0.2s;
+						@include flex;
+						justify-content: space-between;
+						span:last-child {
+							margin-right: 10px;
+							// font-weight: bold;
+						}
 						&:hover {
 							transition: 0.2s;
 							background-color: rgb(220, 220, 220);

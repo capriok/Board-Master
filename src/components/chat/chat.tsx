@@ -9,6 +9,7 @@ import { Input, Button } from 'godspeed'
 
 interface Props {
 	socket: Socket
+	HostId: string
 	User: User
 	users: User[]
 	name: string
@@ -17,6 +18,7 @@ interface Props {
 
 const RoomChat: React.FC<Props> = ({
 	socket,
+	HostId,
 	User,
 	users,
 	name,
@@ -85,7 +87,12 @@ const RoomChat: React.FC<Props> = ({
 	return (
 		<>
 			<div className="chat-cont">
-				<UsersDropdown users={users} User={User} usersDropdown={usersDropdown} />
+				<UsersDropdown
+					socket={socket}
+					HostId={HostId}
+					users={users}
+					User={User}
+					usersDropdown={usersDropdown} />
 				<div className="message-area">
 					{messages.map((m, i) => {
 						return (
